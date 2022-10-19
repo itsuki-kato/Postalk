@@ -3,11 +3,22 @@
 ・Laravel9から導入されたviteを使用してjsのコンパイルを行う。  
 -使用要件 ⇒ _Node.js(ver.16以上)、php(ver.8)以上_。  
 -LaravelMixは使用しない。  
-・jsライブラリは _Vue.js_ とする。(ver.3.2.40)  
+・jsライブラリは Vue.jsも使用可能となっているが、一旦開発コストを重視してjQuery とする。(ver.3.6.1)  
 ・cssはBootstrapと自作したCSSファイルを使用する。  
+・jsファイル(jQuery)の読み込み手順  
+1.jsファイルをresourses/js配下に作成する。  
+2.layout.blade.phpファイルのヘッダタグ内、  
+@vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/index.js'])  
+の部分に作成したjsファイルパスを追記する。  
 
 ■サーバーサイド：  
 ・ライブラリの導入予定はなし。必要になったら随時追加。  
+
+
+■ディレクトリ構成(カスタマイズ分だけ記載)  
+・DB操作はRepositoryパターンを導入する。  
+-Model内にビジネスロジックは記載せず、Repositoryクラスに記載し、RepositoryクラスのInterfaceを作成して参照する。  
+
 
 
 ## 環境構築手順
