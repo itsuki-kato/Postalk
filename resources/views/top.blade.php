@@ -1,17 +1,6 @@
 @extends('layouts.layout')
 
 @section('top')
-    <div id="vue-test"></div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <div id="vue-test2"></div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <button id="jquery-test" class="border rounded" type="button">クリックしてください</button>
     <main role="main">
         <div class="album py-5 bg-light">
             <div class="container">

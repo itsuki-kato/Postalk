@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Front\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,5 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// login
+Route::get('/login', [UserController::class, 'login']);
+
 // Top
-Route::get('/', function () { return view('top'); });
+// TODO：middlewareのauthチェックを有効にする。
+Route::group(['middleware => auth'], function () {
+    Route::get('/', function () { return view('top'); });
+});
