@@ -22,3 +22,5 @@ Route::get('/login', [UserController::class, 'login']);
 Route::group(['middleware => auth'], function () {
     Route::get('/', function () { return view('top'); });
 });
+
+// Post

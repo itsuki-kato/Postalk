@@ -21,7 +21,6 @@ class UserController extends Controller
     )
     {}
 
-
     public function login(Request $request)
     {
         $User = $this->userRepository->sample();
