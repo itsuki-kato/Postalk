@@ -1,6 +1,6 @@
 @extends('layouts.layout')
 
-@section('top')
+@section('content')
     <main role="main">
         <div class="album py-5 bg-light">
             <div class="container">

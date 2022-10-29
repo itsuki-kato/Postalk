@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Front\UserController;
+use App\Http\Controllers\Front\PostController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,3 +25,7 @@ Route::group(['middleware => auth'], function () {
 });
 
 // Post
+Route::get('/post', [PostController::class, 'index']); // 入力画面
+Route::post('/post/create', [PostController::class, 'create']); // 新規作成
+Route::get('/post/{post_id}/edit', [PostController::class, 'edit_index']); // 入力画面(編集)
+Route::post('/post/{post_id}/edit', [PostController::class, 'edit']); // 編集保存
