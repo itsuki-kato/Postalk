@@ -6,6 +6,9 @@ use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\PostRepository;
+use App\Repositories\UserCategoryRepository;
+use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -16,7 +19,8 @@ class PostController extends Controller
      * @param PostRepository
      */
     public function __construct(
-        private PostRepository $postRepository
+        private PostRepository $postRepository,
+        private UserCategoryRepository $userCategoryRepository
     )
     {}
 
@@ -28,7 +32,16 @@ class PostController extends Controller
      */
     public function createIndex(Request $request)
     {
-        return view('post.index');
+        // ログイン中のユーザーを取得。
+        $User = Auth::user();
+
+        // TODO：middlewareで判定を行う。
+        if(is_null($User)) { return redirect()->route('/logout'); }
+
+        // セレクトボックス用のユーザーに紐付いたカテゴリの配列を取得。
+        $user_categories = $this->userCategoryRepository->getList($User);
+
+        return view('post.index')->with('user_categories', $user_categories);
     }
 
     /**
@@ -53,7 +66,7 @@ class PostController extends Controller
      * @return void
      */
     public function editIndex($post_id)
-    {
+{
         $Post = Post::find($post_id);
 
         if(!$Post) { throw new NotFoundHttpException(); }

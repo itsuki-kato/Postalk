@@ -17,6 +17,7 @@ class Post extends Model
         'user_id',
         'category_id',
         'post_id',
+        'post_title',
         'post_text',
         'post_img_url',
         'create_at',
