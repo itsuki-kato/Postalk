@@ -1,0 +1,6 @@
+/* 投稿系専用スタイルシート */
+
+input,
+textarea {
+    border: 1px solid #ccc;
+}

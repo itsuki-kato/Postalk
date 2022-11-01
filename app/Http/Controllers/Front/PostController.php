@@ -38,11 +38,13 @@ class PostController extends Controller
         // TODO：middlewareで判定を行う。
         // if(is_null($User)) { return redirect()->route('/logout'); }
 
+        // NOTE：デバッグ用。
+        $user_id = 'ituki';
         // セレクトボックス用のユーザーに紐付いたカテゴリの配列を取得。
-        $user_categories = $this->userCategoryRepository->getList($User->user_id);
-        dd($user_categories);
+        $user_category_list = $this->userCategoryRepository->getList($user_id);
+        // dd($user_category_list);
 
-        return view('post.index')->with('user_categories', $user_categories);
+        return view('post.index')->with('user_category_list', $user_category_list);
     }
 
     /**
