@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\PostRepository;
 use App\Repositories\UserCategoryRepository;
-use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -48,7 +47,7 @@ class PostController extends Controller
     }
 
     /**
-     * Undocumented function
+     * 投稿の新規作成を行います。
      *
      * @param Request $request
      * @return void
@@ -56,10 +55,11 @@ class PostController extends Controller
     public function create(Request $request)
     {
         // 入力値に対してのバリデーションを行う。
+        $this->valid($request);
 
         Post::create($request->all());
 
-        return view('');
+        return view('post.index');
     }
 
     /**
@@ -88,26 +88,44 @@ class PostController extends Controller
      */
     public function edit(Request $request)
     {
+        $this->valid($request);
+
         $Post = Post::create($request->all());
         // dd($Post);
         return [];
     }
 
     /**
-     * 入力値と、リレーションで保持しているModelのバリデーションを行います。
+     * 入力値に対してのバリデーションを行います。
      *
-     * @param Post $Post
+     * @param Request $request
      * @return void
      */
-    // private function valid(Post $Post)
-    // {
-    //     if($Post->create_at) // 編集の場合
-    //     {
-    //         // 保持しているModelの存在チェック。
-    //         $User =
-    //     }
-    //     $validator = Validator::make($request->all(), [
-    //         ''
-    //     ]);
-    // }
+    private function valid(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            // バリデーションルールの定義。
+            'category_id' => 'required',
+            'post_title' => 'required',
+            'post_text' => 'required',
+            'post_img_url' => 'nullable'
+        ],
+        [
+            // エラーメッセージの定義。
+            'category_id.required'   => 'カテゴリを選択してください',
+            'post_title.required'    => 'タイトルを入力してください',
+            'post_text.required'     => '本文を入力してください'
+        ]);
+
+        // バリデーションを通過できなかった場合はエラーとともにリダイレクト。
+        if($validator->fails())
+        {
+            // エラーメッセージをsessionに保存。
+            return redirect('post.index')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        return;
+    }
 }
