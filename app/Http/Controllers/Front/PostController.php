@@ -36,10 +36,11 @@ class PostController extends Controller
         $User = Auth::user();
 
         // TODO：middlewareで判定を行う。
-        if(is_null($User)) { return redirect()->route('/logout'); }
+        // if(is_null($User)) { return redirect()->route('/logout'); }
 
         // セレクトボックス用のユーザーに紐付いたカテゴリの配列を取得。
-        $user_categories = $this->userCategoryRepository->getList($User);
+        $user_categories = $this->userCategoryRepository->getList($User->user_id);
+        dd($user_categories);
 
         return view('post.index')->with('user_categories', $user_categories);
     }
@@ -66,7 +67,7 @@ class PostController extends Controller
      * @return void
      */
     public function editIndex($post_id)
-{
+    {
         $Post = Post::find($post_id);
 
         if(!$Post) { throw new NotFoundHttpException(); }
