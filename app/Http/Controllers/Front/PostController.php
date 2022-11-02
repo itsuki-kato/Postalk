@@ -24,12 +24,11 @@ class PostController extends Controller
     {}
 
     /**
-     * 新規作成画面を表示します。
+     * 入力画面を表示します。
      *
      * @param Request $request
-     * @return void
      */
-    public function createIndex(Request $request)
+    public function index(Request $request)
     {
         // ログイン中のユーザーを取得。
         $User = Auth::user();
@@ -37,13 +36,61 @@ class PostController extends Controller
         // TODO：middlewareで判定を行う。
         // if(is_null($User)) { return redirect()->route('/logout'); }
 
+        // NOTE：空のModel渡すの気持ち悪い。。
+        $Post = new Post();
+
         // NOTE：デバッグ用。
         $user_id = 'ituki';
+
         // セレクトボックス用のユーザーに紐付いたカテゴリの配列を取得。
         $user_category_list = $this->userCategoryRepository->getList($user_id);
-        // dd($user_category_list);
 
-        return view('post.index')->with('user_category_list', $user_category_list);
+        return view('post.index', compact('Post', 'user_category_list'));
+    }
+
+    /**
+     * 入力値に対してのバリデーションを行い、通過した場合は新規作成か編集をコールします。
+     *
+     * @param Request $request
+     */
+    public function valid(Request $request)
+    {
+        // create or edit
+        $mode = $request->get('mode');
+
+        $validator = Validator::make($request->all(), [
+            // バリデーションルールの定義。
+            'post_title' => 'required',
+            'post_text' => 'required',
+            'post_img_url' => 'nullable'
+        ],
+        [
+            // エラーメッセージの定義。
+            'post_title.required'    => 'タイトルを入力してください',
+            'post_text.required'     => '本文を入力してください'
+        ]);
+
+        if($validator->fails())
+        {
+            // エラーメッセージをsessionに保存してredirectする。
+            return redirect('/post')
+                ->withErrors($validator)
+                ->withInput()
+                ->with('flush_message', '入力値に誤りがあるため保存できませんでした。');
+        }
+
+        if($mode === 'create') // 新規作成の場合
+        {
+            $this->create($request);
+        }
+        else // 編集の場合
+        {
+            $this->edit($request);
+        }
+
+        return redirect()
+            ->route('post.index')
+            ->with('flush_message', '保存が完了しました。');
     }
 
     /**
@@ -52,41 +99,22 @@ class PostController extends Controller
      * @param Request $request
      * @return void
      */
-    public function create(Request $request)
+    private function create(Request $request)
     {
-        // 入力値に対してのバリデーションを行う。
-        $this->valid($request);
+        // TODO：ファイルアップロード処理
 
         Post::create($request->all());
 
-        return view('post.index');
+        return redirect()->route('post.index')->with('result', 'done!');
     }
 
     /**
-     * Undocumented function
+     * 編集内容の保存を行います。
      *
      * @param Request $request
      * @return void
      */
-    public function editIndex($post_id)
-    {
-        $Post = Post::find($post_id);
-
-        if(!$Post) { throw new NotFoundHttpException(); }
-
-        $User = $Post->user();
-
-        // dd($Post);
-        return view('');
-    }
-
-    /**
-     * Undocumented function
-     *
-     * @param Request $request
-     * @return void
-     */
-    public function edit(Request $request)
+    private function edit(Request $request)
     {
         $this->valid($request);
 
@@ -95,37 +123,4 @@ class PostController extends Controller
         return [];
     }
 
-    /**
-     * 入力値に対してのバリデーションを行います。
-     *
-     * @param Request $request
-     * @return void
-     */
-    private function valid(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            // バリデーションルールの定義。
-            'category_id' => 'required',
-            'post_title' => 'required',
-            'post_text' => 'required',
-            'post_img_url' => 'nullable'
-        ],
-        [
-            // エラーメッセージの定義。
-            'category_id.required'   => 'カテゴリを選択してください',
-            'post_title.required'    => 'タイトルを入力してください',
-            'post_text.required'     => '本文を入力してください'
-        ]);
-
-        // バリデーションを通過できなかった場合はエラーとともにリダイレクト。
-        if($validator->fails())
-        {
-            // エラーメッセージをsessionに保存。
-            return redirect('post.index')
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        return;
-    }
 }

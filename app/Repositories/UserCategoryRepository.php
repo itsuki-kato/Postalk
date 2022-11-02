@@ -6,9 +6,6 @@ use App\Models\Category;
 use App\Models\UserCategory;
 use Illuminate\Support\Facades\DB;
 
-/**
- * UserCategoryモデルとの接続を担当します。
- */
 class UserCategoryRepository
 {
     /**
@@ -21,7 +18,7 @@ class UserCategoryRepository
     {
         if(!$user_id) { return []; }
 
-        // userに紐付いたカテゴリのidの配列を取得。
+        // userに紐付いたカテゴリidだけの配列を取得。
         $user_categoriy_ids = DB::table('t_user_category')
             ->where('user_id', '=', $user_id)
             ->pluck('category_id');
