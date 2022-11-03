@@ -20,7 +20,7 @@ class UserCategoryRepository
 
         // userに紐付いたカテゴリidだけの配列を取得。
         $user_categoriy_ids = DB::table('t_user_category')
-            ->where('user_id', '=', $user_id)
+            ->where('user_id', $user_id)
             ->pluck('category_id');
 
         $user_category_list = [];
@@ -28,7 +28,7 @@ class UserCategoryRepository
         {
             // カテゴリidからカテゴリ名を取得。
             $category_neme = DB::table('m_category')
-                ->where('category_id', '=', $user_category_id)
+                ->where('category_id', $user_category_id)
                 ->value('category_name');
 
             // [cateogry_id => category_name]の形式に整形。

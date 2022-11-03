@@ -51,6 +51,21 @@ class PostController extends Controller
     }
 
     /**
+     * 編集画面を表示します。
+     *
+     * @param Request $request
+     * @param string $post_id
+     */
+    public function editIndex(Request $request, $post_id)
+    {
+        $user_id = 'ituki';
+        $Post = Post::where('post_id', $post_id)->first();
+        $user_category_list = $this->userCategoryRepository->getList($user_id);
+
+        return view('post.index', compact('Post', 'user_category_list'));
+    }
+
+    /**
      * 入力値に対してのバリデーションを行い、通過した場合は新規作成か編集をコールします。
      *
      * @param Request $request
@@ -90,15 +105,20 @@ class PostController extends Controller
         if($mode === 'create') // 新規作成の場合
         {
             $this->create($request, $user_id);
+
+            return redirect()
+                ->route('post.index')
+                ->with('flush_message', 'created!');
         }
         else // 編集の場合
         {
             $this->edit($request);
+
+            return redirect()
+                ->route('post.editIndex', ['post_id' => $request->get('post_id')])
+                ->with('flush_message', 'updated!');
         }
 
-        return redirect()
-            ->route('post.index')
-            ->with('flush_message', '保存が完了しました。');
     }
 
     /**
@@ -124,16 +144,13 @@ class PostController extends Controller
         try
         {
             // NOTE：画像アップロードは任意のため判定を行う。
-            $post_img_url = null;
+            $upload_post_img_url = null;
             if($post_img_file)
             {
-                $post_img_url = $post_img_file->getClientOriginalName();
-
                 // NOTE：デバッグ用。
                 $user_id = 'ituki';
-
                 // ファイルアップロード
-                $this->fileService->uploadPostImg($user_id, $post_img_file);
+                $upload_post_img_url = $this->fileService->uploadPostImg($user_id, $post_img_file);
             }
 
             // 現在登録されているpost_idのmaxを取得する。
@@ -146,7 +163,7 @@ class PostController extends Controller
                 'category_id' => $user_category_id,
                 'post_title' => $post_title,
                 'post_text' => $post_text,
-                'post_img_url' => $post_img_url
+                'post_img_url' => $upload_post_img_url
             ]);
 
             DB::commit();
@@ -171,11 +188,29 @@ class PostController extends Controller
      */
     private function edit(Request $request)
     {
-        $this->valid($request);
+        $user_id = 'ituki';
+        $post_id = $request->get('post_id');
+        $post_img_file = $request->file('post_img_url');
 
-        $Post = Post::create($request->all());
-        // dd($Post);
-        return [];
+        // NOTE：画像アップロードは任意のため判定を行う。
+        $upload_post_img_url = null;
+        if($post_img_file)
+        {
+            // NOTE：デバッグ用。
+            $user_id = 'ituki';
+            // ファイルアップロード
+            $upload_post_img_url = $this->fileService->uploadPostImg($user_id, $post_img_file);
+        }
+
+        Post::where('post_id', $post_id)
+            ->update([
+                'category_id' => $request->get('user_category'),
+                'post_title' => $request->get('post_title'),
+                'post_text' => $request->get('post_text'),
+                'post_img_url' => $upload_post_img_url
+            ]);
+
+        return;
     }
 
 }

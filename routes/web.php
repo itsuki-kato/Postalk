@@ -26,4 +26,6 @@ Route::group(['middleware => auth'], function () {
 
 // Post
 Route::get('/post', [PostController::class, 'index'])->name('post.index'); // 入力画面
+Route::get('/post/{post_id}/edit', [PostController::class, 'editIndex'])->name('post.editIndex'); // 入力画面
 Route::post('/post/valid', [PostController::class, 'valid'])->name('post.valid'); // バリデーションと新規作成or編集
+
