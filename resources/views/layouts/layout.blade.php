@@ -12,12 +12,23 @@
         <link rel="stylesheet" href="{{ asset('/css/style.css')  }}" >
         <link rel="stylesheet" href="{{ asset('/css/post.css')  }}" >
     </head>
+    <style>
+        /* メインのコンテンツ全体を中央寄せにする。 */
+        .layout-main-content {
+            width: 1120px;
+            margin: auto;
+        }
+
+        .layout-main-content {
+            margin-top: 50px;
+        }
+    </style>
     <body>
         <!-- header -->
         @include('header')
 
         <!-- main-content -->
-        <div class="layout-main-content" style="max-width: 1120px; margin: auto;">
+        <div class="layout-main-content">
             @yield('content')
         </div>
 

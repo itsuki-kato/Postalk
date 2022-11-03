@@ -25,6 +25,11 @@ class PostController extends Controller
     )
     {}
 
+    public function list()
+    {
+        return view('post.list');
+    }
+
     /**
      * 入力画面を表示します。
      *
@@ -168,8 +173,6 @@ class PostController extends Controller
 
             DB::commit();
             logs()->info('登録が完了しました。'.$post_id, ['Front' => 'post.create']);
-
-            return redirect()->route('post.index')->with('result', 'done!');
         }
         catch(\Exception $e)
         {
