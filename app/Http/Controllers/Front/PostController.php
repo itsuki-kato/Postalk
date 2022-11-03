@@ -9,8 +9,8 @@ use App\Repositories\PostRepository;
 use App\Repositories\UserCategoryRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
+use App\Services\FileService;
+use Illuminate\Support\Facades\DB;
 class PostController extends Controller
 {
     /**
@@ -19,7 +19,9 @@ class PostController extends Controller
      */
     public function __construct(
         private PostRepository $postRepository,
-        private UserCategoryRepository $userCategoryRepository
+        private UserCategoryRepository $userCategoryRepository,
+        private FileService $fileService
+
     )
     {}
 
@@ -55,6 +57,11 @@ class PostController extends Controller
      */
     public function valid(Request $request)
     {
+        $User = Auth::user();
+
+        // NOTE：デバッグ用。
+        $user_id = 'ituki';
+
         // create or edit
         $mode = $request->get('mode');
 
@@ -62,12 +69,13 @@ class PostController extends Controller
             // バリデーションルールの定義。
             'post_title' => 'required',
             'post_text' => 'required',
-            'post_img_url' => 'nullable'
+            'post_img_url' => 'image|nullable'
         ],
         [
             // エラーメッセージの定義。
-            'post_title.required'    => 'タイトルを入力してください',
-            'post_text.required'     => '本文を入力してください'
+            'post_title.required' => 'タイトルを入力してください',
+            'post_text.required'  => '本文を入力してください',
+            'post_img_url'        => 'ファイルは画像のみ選択できます。'
         ]);
 
         if($validator->fails())
@@ -81,7 +89,7 @@ class PostController extends Controller
 
         if($mode === 'create') // 新規作成の場合
         {
-            $this->create($request);
+            $this->create($request, $user_id);
         }
         else // 編集の場合
         {
@@ -97,15 +105,62 @@ class PostController extends Controller
      * 投稿の新規作成を行います。
      *
      * @param Request $request
+     * @param string $user_id
      * @return void
      */
-    private function create(Request $request)
+    private function create(Request $request, $user_id)
     {
-        // TODO：ファイルアップロード処理
 
-        Post::create($request->all());
+        // 入力値
+        $user_category_id = $request->get('user_category');
+        $post_title = $request->get('post_title');
+        $post_text = $request->get('post_text');
 
-        return redirect()->route('post.index')->with('result', 'done!');
+        // 画像ファイル
+        $post_img_file = $request->file('post_img_url');
+
+        // ファイルアップロードとDB登録までを1トランザクションとする。
+        DB::beginTransaction();
+        try
+        {
+            // NOTE：画像アップロードは任意のため判定を行う。
+            $post_img_url = null;
+            if($post_img_file)
+            {
+                $post_img_url = $post_img_file->getClientOriginalName();
+
+                // NOTE：デバッグ用。
+                $user_id = 'ituki';
+
+                // ファイルアップロード
+                $this->fileService->uploadPostImg($user_id, $post_img_file);
+            }
+
+            // 現在登録されているpost_idのmaxを取得する。
+            $max_post_id = $this->postRepository->getMaxId($user_id);
+            $post_id = $max_post_id + 1;
+
+            Post::create([
+                'user_id' => $user_id,
+                'post_id' => $post_id,
+                'category_id' => $user_category_id,
+                'post_title' => $post_title,
+                'post_text' => $post_text,
+                'post_img_url' => $post_img_url
+            ]);
+
+            DB::commit();
+            logs()->info('登録が完了しました。'.$post_id, ['Front' => 'post.create']);
+
+            return redirect()->route('post.index')->with('result', 'done!');
+        }
+        catch(\Exception $e)
+        {
+            // TODO：例外発生時の画像アップロードはどうするか検討。
+            logs()->error('例外が発生しました。'.$e);
+            DB::rollBack();
+        }
+
     }
 
     /**

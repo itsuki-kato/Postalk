@@ -11,10 +11,4 @@ use Illuminate\Support\Facades\DB;
  */
 class CategoryRepository
 {
-    /**
-     *
-     */
-    public function sample()
-    {
-    }
 }
