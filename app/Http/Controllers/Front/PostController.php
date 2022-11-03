@@ -87,15 +87,17 @@ class PostController extends Controller
 
         $validator = Validator::make($request->all(), [
             // バリデーションルールの定義。
-            'post_title' => 'required',
-            'post_text' => 'required',
-            'post_img_url' => 'image|nullable'
+            'post_title'   => 'required',
+            'post_text'    => 'required',
+            'post_img_url' => 'image',
+            'post_img_url' => 'max:30',
         ],
         [
             // エラーメッセージの定義。
-            'post_title.required' => 'タイトルを入力してください',
-            'post_text.required'  => '本文を入力してください',
-            'post_img_url'        => 'ファイルは画像のみ選択できます。'
+            'post_title' => 'タイトルを入力してください',
+            'post_text'  => '本文を入力してください',
+            'post_img_url'  => 'ファイルは画像のみ選択できます。',
+            'post_img_url' => 'ファイル名は30文字までです。'
         ]);
 
         if($validator->fails())
@@ -212,6 +214,8 @@ class PostController extends Controller
                 'post_text' => $request->get('post_text'),
                 'post_img_url' => $upload_post_img_url
             ]);
+
+        logs()->info('編集が完了しました。'.$post_id, ['Front' => 'post.edit']);
 
         return;
     }
