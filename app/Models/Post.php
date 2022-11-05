@@ -33,9 +33,24 @@ class Post extends Model
     // timestampの
     public $timestamps = false;
 
+    /**
+     * getUser
+     *
+     * @return User $User
+     */
     public function user()
     {
-        return $this->belongsTo('App\Models\User');
+        return $this->belongsTo('App\Models\User', 'user_id', 'user_id');
+    }
+
+    /**
+     * getCategory
+     *
+     * @return Category $Category
+     */
+    public function category()
+    {
+        return $this->belongsTo('App\Models\Category', 'category_id', 'category_id');
     }
 
 }

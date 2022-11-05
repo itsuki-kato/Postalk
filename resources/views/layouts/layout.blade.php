@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Postalk</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/post_index.js'])
+        @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/post_index.js', 'resources/js/post_list.js'])
         <!-- Fonts -->
         <script src="https://kit.fontawesome.com/c00c4bbdb5.js" crossorigin="anonymous"></script>
         <link href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">

@@ -4,3 +4,8 @@ input,
 textarea {
     border: 1px solid #ccc;
 }
+
+/* 投稿一覧画面 */
+#card-inner {
+    display: none;
+}

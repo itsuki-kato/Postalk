@@ -14,7 +14,7 @@ class UserCategoryRepository
      * @param string $user_id
      * @return array $user_category_list [category_id => cagegory_name]
      */
-    public function getList($user_id)
+    public function getListForSelect($user_id)
     {
         if(!$user_id) { return []; }
 
@@ -27,14 +27,26 @@ class UserCategoryRepository
         foreach($user_categoriy_ids as $user_category_id)
         {
             // カテゴリidからカテゴリ名を取得。
-            $category_neme = DB::table('m_category')
+           $category_neme = DB::table('m_category')
                 ->where('category_id', $user_category_id)
                 ->value('category_name');
 
             // [cateogry_id => category_name]の形式に整形。
             $user_category_list[$user_category_id] = $category_neme;
         }
-
         return $user_category_list;
+    }
+
+    /**
+     * ユーザーに紐づくカテゴリのModelのCollectionを返します。
+     *
+     * @param [int] $user_id
+     * @return UserCategory[] $UserCategories
+     * */
+    public function getList($user_id)
+    {
+        $UserCategories = UserCategory::where('user_id', $user_id)->get();
+
+        return $UserCategories;
     }
 }

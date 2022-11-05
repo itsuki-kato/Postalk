@@ -21,13 +21,19 @@ class PostController extends Controller
         private PostRepository $postRepository,
         private UserCategoryRepository $userCategoryRepository,
         private FileService $fileService
-
     )
     {}
 
+    /**
+     * タイムラインを表示します。
+     */
     public function list()
     {
-        return view('post.list');
+        // NOTE：デバッグ用。
+        $user_id = 'ituki';
+        $Posts = $this->postRepository->getListForTimeLine($user_id);
+
+        return view('post.list', compact('Posts'));
     }
 
     /**
@@ -50,7 +56,7 @@ class PostController extends Controller
         $user_id = 'ituki';
 
         // セレクトボックス用のユーザーに紐付いたカテゴリの配列を取得。
-        $user_category_list = $this->userCategoryRepository->getList($user_id);
+        $user_category_list = $this->userCategoryRepository->getListForSelect($user_id);
 
         return view('post.index', compact('Post', 'user_category_list'));
     }
@@ -65,7 +71,9 @@ class PostController extends Controller
     {
         $user_id = 'ituki';
         $Post = Post::where('post_id', $post_id)->first();
-        $user_category_list = $this->userCategoryRepository->getList($user_id);
+
+        $User = $Post->user->posts;
+        $user_category_list = $this->userCategoryRepository->getListForSelect($user_id);
 
         return view('post.index', compact('Post', 'user_category_list'));
     }
@@ -94,9 +102,9 @@ class PostController extends Controller
         ],
         [
             // エラーメッセージの定義。
-            'post_title' => 'タイトルを入力してください',
-            'post_text'  => '本文を入力してください',
-            'post_img_url'  => 'ファイルは画像のみ選択できます。',
+            'post_title'   => 'タイトルを入力してください',
+            'post_text'    => '本文を入力してください',
+            'post_img_url' => 'ファイルは画像のみ選択できます。',
             'post_img_url' => 'ファイル名は30文字までです。'
         ]);
 
@@ -125,7 +133,6 @@ class PostController extends Controller
                 ->route('post.editIndex', ['post_id' => $request->get('post_id')])
                 ->with('flush_message', 'updated!');
         }
-
     }
 
     /**
@@ -137,7 +144,6 @@ class PostController extends Controller
      */
     private function create(Request $request, $user_id)
     {
-
         // 入力値
         $user_category_id = $request->get('user_category');
         $post_title = $request->get('post_title');
@@ -165,11 +171,11 @@ class PostController extends Controller
             $post_id = $max_post_id + 1;
 
             Post::create([
-                'user_id' => $user_id,
-                'post_id' => $post_id,
-                'category_id' => $user_category_id,
-                'post_title' => $post_title,
-                'post_text' => $post_text,
+                'user_id'      => $user_id,
+                'post_id'      => $post_id,
+                'category_id'  => $user_category_id,
+                'post_title'   => $post_title,
+                'post_text'    => $post_text,
                 'post_img_url' => $upload_post_img_url
             ]);
 
@@ -209,9 +215,9 @@ class PostController extends Controller
 
         Post::where('post_id', $post_id)
             ->update([
-                'category_id' => $request->get('user_category'),
-                'post_title' => $request->get('post_title'),
-                'post_text' => $request->get('post_text'),
+                'category_id'  => $request->get('user_category'),
+                'post_title'   => $request->get('post_title'),
+                'post_text'    => $request->get('post_text'),
                 'post_img_url' => $upload_post_img_url
             ]);
 

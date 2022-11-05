@@ -7,6 +7,15 @@ use Illuminate\Support\Facades\DB;
 
 class PostRepository
 {
+    /**
+     * PostRepostioryConstructor
+     *
+     * @param UserCategoryRepository $userCategoryRepository
+     */
+    public function __construct(
+        private UserCategoryRepository $userCategoryRepository
+    )
+    {}
 
     /**
      * NOTE：post_idはユーザーごとに管理する？
@@ -29,5 +38,30 @@ class PostRepository
         }
 
         return (int)$max_id;
+    }
+
+    /**
+     * タイムライン表示用にユーザーカテゴリに紐付いた投稿のCollectionを取得します。
+     *
+     * @param string $user_id
+     * @return Post[] $Posts
+     */
+    public function getListForTimeLine($user_id)
+    {
+        $UserCategories = $this->userCategoryRepository->getList($user_id);
+
+        $user_cateory_ids = [];
+        foreach($UserCategories as $UserCategory)
+        {
+            // userに紐付いたcategory_idの配列。
+            $user_cateory_ids[] = $UserCategory->category_id;
+        }
+
+        // user_categoryに紐付いた投稿を取得する。
+        $Posts = Post::whereIn('category_id', $user_cateory_ids)
+            ->orderBy('create_at', 'desc')
+            ->get();
+
+        return $Posts;
     }
 }
