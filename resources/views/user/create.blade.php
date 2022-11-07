@@ -22,7 +22,7 @@
         <tr>
             <th>性別*</th>
             <td>
-                @foreach(UserConst::SEX_LIST as $key => $val)
+                @foreach(Consts::SEX_LIST as $key => $val)
                     <input type="radio" name="sex" value={{$key}} {{$key == 0 ? 'checked' : ''}}>{{$val}}
                 @endforeach
             </td>

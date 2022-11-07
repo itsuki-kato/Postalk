@@ -210,7 +210,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
-        'UserConst' =>  App\Consts\UserConst::class,
+        'Consts' =>  App\Common\Consts::class,
     ])->toArray(),
 
 ];
