@@ -1,6 +1,6 @@
 $(function() {
-    $('#card-open').on('click', function() {
+    $('.card-open').on('click', function() {
         $(this).toggleClass('active');
-        $(this).next('#card-inner').slideToggle();
+        $(this).next('.card-inner').slideToggle();
     });
 });

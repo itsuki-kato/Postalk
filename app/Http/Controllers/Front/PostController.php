@@ -43,13 +43,6 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-        // ログイン中のユーザーを取得。
-        $User = Auth::user();
-
-        // TODO：middlewareで判定を行う。
-        // if(is_null($User)) { return redirect()->route('/logout'); }
-
-        // NOTE：空のModel渡すの気持ち悪い。。
         $Post = new Post();
 
         // NOTE：デバッグ用。
@@ -72,7 +65,6 @@ class PostController extends Controller
         $user_id = 'ituki';
         $Post = Post::where('post_id', $post_id)->first();
 
-        $User = $Post->user->posts;
         $user_category_list = $this->userCategoryRepository->getListForSelect($user_id);
 
         return view('post.index', compact('Post', 'user_category_list'));
@@ -85,8 +77,6 @@ class PostController extends Controller
      */
     public function valid(Request $request)
     {
-        $User = Auth::user();
-
         // NOTE：デバッグ用。
         $user_id = 'ituki';
 
@@ -97,8 +87,8 @@ class PostController extends Controller
             // バリデーションルールの定義。
             'post_title'   => 'required',
             'post_text'    => 'required',
-            'post_img_url' => 'image',
-            'post_img_url' => 'max:30',
+            'post_img_url.imagee' => 'image',
+            'post_img_url.length' => 'max:30',
         ],
         [
             // エラーメッセージの定義。
