@@ -12,14 +12,103 @@ use Illuminate\Support\Facades\DB;
 class UserRepository
 {
     /**
-     * サンプルメソッド
+     * ユーザー情報一覧取得
      *
-     * @return User $User
-     */
-    public function sample()
+     * @return User $user_list
+    */
+    public function get_user_list()
     {
-        $User = DB::table('t_user')->first();
+        $user_list = DB::table('t_user')->get();
 
-        return $User;
+        return $user_list;
+    }
+
+    /**
+     * ユーザー情報取得
+     *
+     * @param string $user_id
+     * @param string $password
+     * @return User $user
+    */
+    public function get_user($user_id, $password = null)
+    {
+        // TODO: パワープレーしない
+        if (!empty($password)) {
+            $user = DB::table('t_user')->where('user_id', $user_id)->where('password', $password)->first();
+        } else {
+            $user = DB::table('t_user')->where('user_id', $user_id)->first();
+        }
+
+        return $user;
+    }
+
+    /**
+     * ユーザー情報登録
+     *
+     * @param string $user_id
+     * @param string $user_name
+     * @param string $password
+     * @param string $email
+     * @param string $sex
+     * @param int    $birth
+     * @param string $address
+     * @return void
+    */
+    public function create_user($user_id, $user_name, $password, $email, $sex, $birth = null, $address = null)
+    {
+        // TODO: passwordの暗号化
+        // TODO: try-catch,transactionの記述箇所検討
+        try {
+            DB::beginTransaction();
+
+            DB::table('t_user')->insert([
+                'user_id'   => $user_id,
+                'user_name' => $user_name,
+                'password'  => $password,
+                'email'     => $email,
+                'sex'       => $sex,
+                'birth'     => $birth,
+                'address'   => $address,
+            ]);
+
+            DB::commit();
+        } catch (Throwable $e) {
+            // TODO:エラーメッセージ出力
+            DB::rollBack();
+        }
+    }
+
+    /**
+     * ユーザー情報更新
+     *
+     * @param string $user_id
+     * @param string $user_name
+     * @param string $password
+     * @param string $email
+     * @param string $sex
+     * @param int    $birth
+     * @param string $address
+     * @return void
+    */
+    public function update_user($user_id, $user_name, $email, $address = null, $pf_img_url = null, $bg_img_url = null, $intro_text = null)
+    {
+        // TODO: try-catch,transactionの記述箇所検討
+        try {
+            DB::beginTransaction();
+
+            DB::table('t_user')->where('user_id', $user_id)->update([
+                'user_name'  => $user_name,
+                'email'      => $email,
+                'address'    => $address,
+                'pf_img_url' => $pf_img_url,
+                'bg_img_url' => $bg_img_url,
+                'intro_text' => $intro_text,
+            ]);
+
+            DB::commit();
+        } catch (Throwable $e) {
+            // TODO:エラーメッセージ出力
+            DB::rollBack();
+        }
     }
 }
