@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
 use App\Repositories\CategoryRepository;;
-use App\Services\SampleService;
 use App\Http\Controllers\Controller;
 use App\Common\Consts;
 
@@ -19,8 +18,7 @@ class UserController extends Controller
      */
     public function __construct(
         private UserRepository $userRepository,
-        private CategoryRepository $CategoryRepository,
-        private SampleService $sampleService
+        private CategoryRepository $CategoryRepository
     )
     {}
 
