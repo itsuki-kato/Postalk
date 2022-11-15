@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Common\MessageConsts;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -11,6 +12,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Services\FileService;
 use Illuminate\Support\Facades\DB;
+
+use function PHPUnit\Framework\throwException;
+
 class PostController extends Controller
 {
     /**
@@ -88,14 +92,14 @@ class PostController extends Controller
             'post_title'   => 'required',
             'post_text'    => 'required',
             'post_img_url.imagee' => 'image',
-            'post_img_url.length' => 'max:30',
+            'post_img_url.length' => 'max:100',
         ],
         [
             // エラーメッセージの定義。
-            'post_title'   => 'タイトルを入力してください',
-            'post_text'    => '本文を入力してください',
-            'post_img_url' => 'ファイルは画像のみ選択できます。',
-            'post_img_url' => 'ファイル名は30文字までです。'
+            'post_title'   => MessageConsts::ERROR_POST_TITLE_REQUIRED,
+            'post_text'    => MessageConsts::ERROR_POST_TEXT_REQUIRED,
+            'post_img_url' => MessageConsts::ERROR_POST_IMG_FILE_TYPE,
+            'post_img_url' => MessageConsts::ERROR_POST_IMG_LENGTH
         ]);
 
         if($validator->fails())
@@ -104,7 +108,7 @@ class PostController extends Controller
             return redirect('/post')
                 ->withErrors($validator)
                 ->withInput()
-                ->with('flush_message', '入力値に誤りがあるため保存できませんでした。');
+                ->with('flush_message', MessageConsts::ERROR_POST_SAVE);
         }
 
         if($mode === 'create') // 新規作成の場合
@@ -113,7 +117,7 @@ class PostController extends Controller
 
             return redirect()
                 ->route('post.index')
-                ->with('flush_message', 'created!');
+                ->with('flush_message', MessageConsts::POST_CREATE_COMPLETE);
         }
         else // 編集の場合
         {
@@ -121,7 +125,7 @@ class PostController extends Controller
 
             return redirect()
                 ->route('post.editIndex', ['post_id' => $request->get('post_id')])
-                ->with('flush_message', 'updated!');
+                ->with('flush_message', MessageConsts::POST_EDIT_COMPLETE);
         }
     }
 
@@ -134,13 +138,16 @@ class PostController extends Controller
      */
     private function create(Request $request, $user_id)
     {
+        // 画像ファイル
+        $post_img_file = $request->file('post_img_url');
         // 入力値
         $user_category_id = $request->get('user_category');
         $post_title = $request->get('post_title');
         $post_text = $request->get('post_text');
 
-        // 画像ファイル
-        $post_img_file = $request->file('post_img_url');
+        // 現在登録されているpost_idのmaxを取得する。
+        $max_post_id = $this->postRepository->getMaxId($user_id);
+        $post_id = $max_post_id + 1;
 
         // ファイルアップロードとDB登録までを1トランザクションとする。
         DB::beginTransaction();
@@ -152,33 +159,33 @@ class PostController extends Controller
             {
                 // NOTE：デバッグ用。
                 $user_id = 'ituki';
+                // 保存先パス名
+                // TODO：storage配下に変更
+                $target_path = public_path('uploads/'.$user_id);
                 // ファイルアップロード
-                $upload_post_img_url = $this->fileService->uploadPostImg($user_id, $post_img_file);
+                $upload_post_img_url = $this->fileService->uploadImg($post_img_file, $target_path);
             }
 
-            // 現在登録されているpost_idのmaxを取得する。
-            $max_post_id = $this->postRepository->getMaxId($user_id);
-            $post_id = $max_post_id + 1;
-
-            Post::create([
-                'user_id'      => $user_id,
-                'post_id'      => $post_id,
-                'category_id'  => $user_category_id,
-                'post_title'   => $post_title,
-                'post_text'    => $post_text,
-                'post_img_url' => $upload_post_img_url
-            ]);
+            // DB保存
+            $this->postRepository->create(
+                $user_id,
+                $post_id,
+                $user_category_id,
+                $post_title,
+                $post_text,
+                $upload_post_img_url);
 
             DB::commit();
-            logs()->info('登録が完了しました。'.$post_id, ['Front' => 'post.create']);
         }
         catch(\Exception $e)
         {
+            throwException($e);
             // TODO：例外発生時の画像アップロードはどうするか検討。
             logs()->error('例外が発生しました。'.$e);
             DB::rollBack();
         }
 
+        return;
     }
 
     /**
@@ -191,27 +198,45 @@ class PostController extends Controller
     {
         $user_id = 'ituki';
         $post_id = $request->get('post_id');
+        $user_category_id = $request->get('user_category');
+        $post_title = $request->get('post_title');
+        $post_text = $request->get('post_text');
         $post_img_file = $request->file('post_img_url');
 
-        // NOTE：画像アップロードは任意のため判定を行う。
-        $upload_post_img_url = null;
-        if($post_img_file)
+        // ファイルアップロードとDB登録までを1トランザクションとする。
+        DB::beginTransaction();
+        try
         {
-            // NOTE：デバッグ用。
-            $user_id = 'ituki';
-            // ファイルアップロード
-            $upload_post_img_url = $this->fileService->uploadPostImg($user_id, $post_img_file);
+            // NOTE：画像アップロードは任意のため判定を行う。
+            $upload_post_img_url = null;
+            if($post_img_file)
+            {
+                // NOTE：デバッグ用。
+                $user_id = 'ituki';
+                // 保存先パス名
+                // TODO：storage配下に変更
+                $target_path = public_path('uploads/'.$user_id);
+                // ファイルアップロード
+                $upload_post_img_url = $this->fileService->uploadImg($post_img_file, $target_path);
+            }
+
+            // DB保存
+            $this->postRepository->edit(
+                $post_id,
+                $user_category_id,
+                $post_title,
+                $post_text,
+                $upload_post_img_url);
+
+            DB::commit();
         }
-
-        Post::where('post_id', $post_id)
-            ->update([
-                'category_id'  => $request->get('user_category'),
-                'post_title'   => $request->get('post_title'),
-                'post_text'    => $request->get('post_text'),
-                'post_img_url' => $upload_post_img_url
-            ]);
-
-        logs()->info('編集が完了しました。'.$post_id, ['Front' => 'post.edit']);
+        catch(\Exception $e)
+        {
+            throwException($e);
+            // TODO：例外発生時の画像アップロードはどうするか検討。
+            logs()->error('例外が発生しました。'.$e);
+            DB::rollBack();
+        }
 
         return;
     }

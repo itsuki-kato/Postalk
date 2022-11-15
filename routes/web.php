@@ -25,6 +25,11 @@ Route::get('/logout', [UserController::class, 'logout']); // ログアウト
 // UserCreate
 Route::get('/create', function () { return view('user/create'); }); // ユーザー登録画面
 Route::post('/create', [UserController::class, 'create_user']);     // ユーザー登録
+// Post
+Route::get('/post/list', [PostController::class, 'list'])->name('post.list'); // 一覧表示
+Route::get('/post', [PostController::class, 'index'])->name('post.index'); // 入力画面
+Route::get('/post/{post_id}/edit', [PostController::class, 'editIndex'])->name('post.editIndex'); // 入力画面
+Route::post('/post/valid', [PostController::class, 'valid'])->name('post.valid'); // バリデーションと新規作成or編集
 
 // Top
 // TODO：middlewareのauthチェックを有効にする。
@@ -36,9 +41,4 @@ Route::group(['middleware => auth'], function () {
     Route::post('/{user_id}/select_category', [UserController::class, 'select_user_category']);  // カテゴリ選択
 });
 
-// Post
-Route::get('/post/list', [PostController::class, 'list'])->name('post.list'); // 一覧表示
-Route::get('/post', [PostController::class, 'index'])->name('post.index'); // 入力画面
-Route::get('/post/{post_id}/edit', [PostController::class, 'editIndex'])->name('post.editIndex'); // 入力画面
-Route::post('/post/valid', [PostController::class, 'valid'])->name('post.valid'); // バリデーションと新規作成or編集
 
