@@ -30,6 +30,7 @@ Route::get('/post/list', [PostController::class, 'list'])->name('post.list'); //
 Route::get('/post', [PostController::class, 'index'])->name('post.index'); // 入力画面
 Route::get('/post/{post_id}/edit', [PostController::class, 'editIndex'])->name('post.editIndex'); // 入力画面
 Route::post('/post/valid', [PostController::class, 'valid'])->name('post.valid'); // バリデーションと新規作成or編集
+Route::post('/post/favorite', [PostController::class, 'favorite'])->name('post.favorite');
 
 // Top
 // TODO：middlewareのauthチェックを有効にする。

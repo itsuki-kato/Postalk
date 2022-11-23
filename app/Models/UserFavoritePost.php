@@ -5,21 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Post extends Model
+class UserFavoritePost extends Model
 {
+    // define favorite_type
+    const TYPE_LIKE = 1;
+    const TYPE_SUPER_LIKE = 2;
+
     use HasFactory;
 
-    // table名
-    protected $table = 't_user_post';
+    protected $table = 't_user_favorite_post';
 
-    // 参照するカラムを定義
     protected $fillable = [
         'user_id',
-        'category_id',
-        'post_id',
-        'post_title',
-        'post_text',
-        'post_img_url',
+        'favorite_user_id',
+        'favorite_post_id',
+        'favorite_type',
         'create_at',
         'update_at'
     ];
@@ -44,12 +44,12 @@ class Post extends Model
     }
 
     /**
-     * getCategory
+     * getPost
      *
-     * @return Category $Category
+     * @return Post $Post
      */
-    public function category()
+    public function post()
     {
-        return $this->belongsTo('App\Models\Category', 'category_id', 'category_id');
+        return $this->belongsTo('App\Models\Post', 'post_id', 'post_id');
     }
 }

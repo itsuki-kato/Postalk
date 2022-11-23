@@ -3,14 +3,16 @@
 namespace App\Services;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class FileService
 {
     /**
-     * 画像を指定パスに保存します。
+     * フロント側からアップロードされた画像を指定パスに保存します。
+     * NOTE：formからアップロードした画像しか使用できません。
      *
      * @param UploadedFile $file
-     * @param string $target_path
+     * @param string $target_path(storage/appの下の階層から指定する)
      * @return string $upload_file_name
      */
     public function uploadImg(UploadedFile $file, $target_path)
@@ -24,8 +26,8 @@ class FileService
         $file_name = $file->getClientOriginalName();
         $upload_file_name = time().$file_name;
 
-        // 指定パスに保存
-        $file->move($target_path, $upload_file_name);
+        // strage配下の指定パスに保存(ディレクトリが存在しなかったら作成も行う)
+        Storage::put($target_path, $file);
 
         return $upload_file_name;
     }

@@ -24,6 +24,7 @@
                                 <img src="{{ asset('uploads/'.$Post->user->user_id.'/'.$Post->post_img_url) }}" alt="">
                             </div>
                             <p>{{ $Post->post_text }}</p>
+                                <i class="post_favorite_btn fa-regular fa-heart" data-favorite-post-id="{{$Post->post_id}}" data-favorite-user-id="{{ $Post->user_id }}"></i>
                         </div>
                     </div>
                 </div>

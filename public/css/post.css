@@ -10,7 +10,6 @@ textarea {
     display: none;
 }
 
-
 .post-card-thum-wrapper {
     display: flex;
     background-color: black;
@@ -22,4 +21,12 @@ textarea {
     width: 150px;
     height: 150px;
     object-fit: contain;
+}
+
+.post_favorite_btn {
+    font-size: 30px;
+}
+.post_favorite_btn:hover {
+    color: #ccc;
+    cursor: pointer;
 }

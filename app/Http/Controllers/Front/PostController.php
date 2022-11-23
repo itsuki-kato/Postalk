@@ -3,15 +3,20 @@
 namespace App\Http\Controllers\Front;
 
 use App\Common\MessageConsts;
+use App\Models\User;
 use App\Models\Post;
+use App\Models\UserFavoritePost;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\PostRepository;
 use App\Repositories\UserCategoryRepository;
+use App\Repositories\UserFavoritePostRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Services\FileService;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 use function PHPUnit\Framework\throwException;
 
@@ -24,6 +29,7 @@ class PostController extends Controller
     public function __construct(
         private PostRepository $postRepository,
         private UserCategoryRepository $userCategoryRepository,
+        private UserFavoritePostRepository $userFavoritePostRepository,
         private FileService $fileService
     )
     {}
@@ -161,7 +167,7 @@ class PostController extends Controller
                 $user_id = 'ituki';
                 // 保存先パス名
                 // TODO：storage配下に変更
-                $target_path = public_path('uploads/'.$user_id);
+                $target_path = 'post/'.$user_id;
                 // ファイルアップロード
                 $upload_post_img_url = $this->fileService->uploadImg($post_img_file, $target_path);
             }
@@ -241,4 +247,29 @@ class PostController extends Controller
         return;
     }
 
+    /**
+     * 投稿をユーザーのお気に入りに追加、削除します。
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function favorite(Request $request)
+    {
+        if(!$request->ajax()) { throw new BadRequestException('不正なアクセスです。'); }
+
+        $user_id = 'ituki';
+
+        // ajaxで送信されたuser_idとpost_idを配列で取得する。
+        $target_data = $request->target_data;
+        $favorite_user_id = $target_data['favorite_user_id'];
+        $favorite_post_id = $target_data['favorite_post_id'];
+
+        if(!Post::where('post_id', $favorite_post_id)->first()) { throw new NotFoundHttpException('投稿が見つかりませんでした。'); }
+        if(!User::where('user_id', $favorite_user_id)->first()) { throw new NotFoundHttpException('投稿者が見つかりませんでした。'); }
+
+        $this->userFavoritePostRepository->favorite($user_id, $favorite_user_id, $favorite_post_id);
+
+        // front側でお気に入りボタンの色を変更する処理を追加する。
+        return response()->json(['favorite_post_id' => $favorite_post_id]);
+    }
 }
