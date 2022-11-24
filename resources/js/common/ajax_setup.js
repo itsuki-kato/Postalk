@@ -7,9 +7,11 @@
  * @param string data_type
  * @param mixed data
  */
-export default function exeAjax(method = "", url = "", data_type = "", data = "") {
+export default function exeAjax(method = "", url = "", data_type = "", data = "")
+{
     // post送信の場合はcsrf-tokenが必須。ajaxSetup()でデフォルト値を指定。
-    if (method == "POST") {
+    if (method == 'POST')
+    {
         $.ajaxSetup({
             headers: {
                 "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),

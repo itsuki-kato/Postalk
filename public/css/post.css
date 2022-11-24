@@ -27,6 +27,12 @@ textarea {
     font-size: 30px;
 }
 .post_favorite_btn:hover {
-    color: #ccc;
+    color: #ff0000;
     cursor: pointer;
+}
+.post_favorite_btn:active {
+    transition: 0.5s;
+}
+.post_favorite_btn_added {
+    color: #dc143c;
 }
