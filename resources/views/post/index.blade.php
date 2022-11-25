@@ -47,7 +47,7 @@
             @if($Post->post_img_url)
                 <div class="form-group form-inline input-group-sm mt-5">
                     <p>追加済みの画像</p>
-                    <img src="{{ asset('uploads/'.$Post->user_id.'/'.$Post->post_img_url) }}" alt="">
+                    <img src="{{ asset('storage/post/'.$Post->user_id.'/'.$Post->post_img_url) }}" alt="">
                 </div>
             @endif
 

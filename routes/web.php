@@ -25,12 +25,13 @@ Route::get('/logout', [UserController::class, 'logout']); // ログアウト
 // UserCreate
 Route::get('/create', function () { return view('user/create'); }); // ユーザー登録画面
 Route::post('/create', [UserController::class, 'create_user']);     // ユーザー登録
+
 // Post
 Route::get('/post/list', [PostController::class, 'list'])->name('post.list'); // 一覧表示
 Route::get('/post', [PostController::class, 'index'])->name('post.index'); // 入力画面
 Route::get('/post/{post_id}/edit', [PostController::class, 'editIndex'])->name('post.editIndex'); // 入力画面
 Route::post('/post/valid', [PostController::class, 'valid'])->name('post.valid'); // バリデーションと新規作成or編集
-Route::post('/post/favorite', [PostController::class, 'favorite'])->name('post.favorite');
+Route::post('/post/favorite', [PostController::class, 'favorite'])->name('post.favorite'); // 投稿お気に入り登録
 
 // Top
 // TODO：middlewareのauthチェックを有効にする。

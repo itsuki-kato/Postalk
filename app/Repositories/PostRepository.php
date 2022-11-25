@@ -116,15 +116,4 @@ class PostRepository
 
         return;
     }
-
-    public function isMyFavorite($user_id)
-    {
-        $is_my_favorite = false;
-
-        $result = DB::table('t_user_post')
-            ->join('t_user_favorite_post', 't_user_post.user_id', '=', 't_user_favorite_post.user_id')
-            ->where('t_user_favorite_post.favorite_user_id', '=', $user_id)
-            ->get();
-        $is_my_favorite = true;
-    }
 }

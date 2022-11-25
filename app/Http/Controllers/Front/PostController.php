@@ -41,7 +41,6 @@ class PostController extends Controller
     {
         // NOTE：デバッグ用。
         $user_id = 'ituki';
-        $this->postRepository->isMyFavorite($user_id);
         $Posts = $this->postRepository->getListForTimeLine($user_id);
 
         return view('post.list', compact('user_id', 'Posts'));
@@ -222,8 +221,7 @@ class PostController extends Controller
                 // NOTE：デバッグ用。
                 $user_id = 'ituki';
                 // 保存先パス名
-                // TODO：storage配下に変更
-                $target_path = public_path('uploads/'.$user_id);
+                $target_path = 'post/'.$user_id;
                 // ファイルアップロード
                 $upload_post_img_url = $this->fileService->uploadImg($post_img_file, $target_path);
             }

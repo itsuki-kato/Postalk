@@ -15,20 +15,24 @@
                             <div class="mb-1 text-muted">{{ $Post->create_at }}</div>
                         </div>
                         <div class="post-card-thum-wrapper">
-                            <img class="post-card-thum card-img-right flex-auto d-none d-lg-block" alt="Thumbnail [250x250]" src="{{ asset('uploads/'.$Post->user->user_id.'/'.$Post->post_img_url) }}" data-holder-rendered="true">
+                            <img class="post-card-thum card-img-right flex-auto d-none d-lg-block" alt="Thumbnail [250x250]" src="{{ asset('storage/post/'.$Post->user->user_id.'/'.$Post->post_img_url) }}" data-holder-rendered="true">
                         </div>
                     </div>
                     <div class="card-inner card">
                         <div class="post-card-contentWrapper">
                             <div class="">
-                                <img src="{{ asset('uploads/'.$Post->user->user_id.'/'.$Post->post_img_url) }}" alt="">
+                                <img src="{{ asset('storage/post/'.$Post->user->user_id.'/'.$Post->post_img_url) }}" alt="">
                             </div>
                             <p>{{ $Post->post_text }}</p>
                             <span class="ajax_error_message"></span>
                             @if($Post->isMyFavorite($user_id) == true)
-                            <i class="post_favorite_btn fa-solid fa-heart post_favorite_btn_added" data-favorite-post-id="{{ $Post->post_id }}" data-favorite-user-id="{{ $Post->user_id }}"></i>
+                                <i class="post_favorite_btn fa-solid fa-heart post_favorite_btn_added" 
+                                    data-favorite-post-id="{{ $Post->post_id }}" 
+                                    data-favorite-user-id="{{ $Post->user_id }}"></i>
                             @else
-                            <i class="post_favorite_btn fa-solid fa-heart" data-favorite-post-id="{{ $Post->post_id }}" data-favorite-user-id="{{ $Post->user_id }}"></i>
+                                <i class="post_favorite_btn fa-solid fa-heart"
+                                 data-favorite-post-id="{{ $Post->post_id }}" 
+                                 data-favorite-user-id="{{ $Post->user_id }}"></i>
                             @endif
                         </div>
                     </div>
