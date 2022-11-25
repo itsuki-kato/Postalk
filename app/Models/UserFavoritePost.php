@@ -18,7 +18,7 @@ class UserFavoritePost extends Model
     protected $fillable = [
         'user_id',
         'favorite_user_id',
-        'favorite_post_id',
+        'post_id',
         'favorite_type',
         'create_at',
         'update_at'
@@ -51,5 +51,24 @@ class UserFavoritePost extends Model
     public function post()
     {
         return $this->belongsTo('App\Models\Post', 'post_id', 'post_id');
+    }
+
+    /**
+     * TODO:動作確認
+     * isMyFavorite
+     * 
+     * @param [string] $user_id
+     * @return bool
+     */
+    public function isMyFavorite($user_id)
+    {
+        if($this->favorite_user_id == $user_id)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

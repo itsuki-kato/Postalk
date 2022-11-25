@@ -25,10 +25,10 @@ class UserFavoritePostRepository
      *
      * @param string $user_id
      * @param string $favorite_user_id
-     * @param string $favorite_post_id
+     * @param string $post_id
      * @return void
      */
-    public function favorite($user_id, $favorite_user_id, $favorite_post_id)
+    public function favorite($user_id, $favorite_user_id, $post_id)
     {
         DB::beginTransaction();
         try
@@ -36,12 +36,12 @@ class UserFavoritePostRepository
             UserFavoritePost::create([
                 'user_id' => $user_id,
                 'favorite_user_id' => $favorite_user_id,
-                'favorite_post_id' => $favorite_post_id,
+                'post_id' => $post_id,
                 'favorite_type' => UserFavoritePost::TYPE_LIKE
             ]);
 
             DB::commit();
-            logs()->info('お気に入り登録が完了しました。'.$favorite_post_id, ['Front' => 'post.favorite']);
+            logs()->info('お気に入り登録が完了しました。'.$post_id, ['Front' => 'post.favorite']);
         }
         catch (\Exception $e)
         {

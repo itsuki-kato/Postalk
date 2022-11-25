@@ -31,8 +31,8 @@ class PostController extends Controller
         private UserCategoryRepository $userCategoryRepository,
         private UserFavoritePostRepository $userFavoritePostRepository,
         private FileService $fileService
-    ) {
-    }
+    )
+    {}
 
     /**
      * タイムラインを表示します。
@@ -41,9 +41,10 @@ class PostController extends Controller
     {
         // NOTE：デバッグ用。
         $user_id = 'ituki';
+        $this->postRepository->isMyFavorite($user_id);
         $Posts = $this->postRepository->getListForTimeLine($user_id);
 
-        return view('post.list', compact('Posts'));
+        return view('post.list', compact('user_id', 'Posts'));
     }
 
     /**
@@ -93,15 +94,13 @@ class PostController extends Controller
         // create or edit
         $mode = $request->get('mode');
 
-        $validator = Validator::make(
-            $request->all(),
-            [
+        $validator = Validator::make($request->all(), [
             // バリデーションルールの定義。
             'post_title'   => 'required',
             'post_text'    => 'required',
             'post_img_url.imagee' => 'image',
             'post_img_url.length' => 'max:100',
-        ],
+            ],
             [
                 // エラーメッセージの定義。
                 'post_title'   => MessageConsts::ERROR_POST_TITLE_REQUIRED,
@@ -111,7 +110,8 @@ class PostController extends Controller
             ]
         );
 
-        if ($validator->fails()) {
+        if($validator->fails())
+        {
             // エラーメッセージをsessionに保存してredirectする。
             return redirect('/post')
                 ->withErrors($validator)
@@ -119,13 +119,15 @@ class PostController extends Controller
                 ->with('flush_message', MessageConsts::ERROR_POST_SAVE);
         }
 
-        if ($mode === 'create') { // 新規作成の場合
+        if($mode === 'create') // 新規作成の場合
+        {
             $this->create($request, $user_id);
 
             return redirect()
                 ->route('post.index')
                 ->with('flush_message', MessageConsts::POST_CREATE_COMPLETE);
-        } else { // 編集の場合
+        } else // 編集の場合
+        {
             $this->edit($request);
 
             return redirect()
@@ -156,10 +158,12 @@ class PostController extends Controller
 
         // ファイルアップロードとDB登録までを1トランザクションとする。
         DB::beginTransaction();
-        try {
+        try
+        {
             // NOTE：画像アップロードは任意のため判定を行う。
             $upload_post_img_url = null;
-            if ($post_img_file) {
+            if($post_img_file)
+            {
                 // NOTE：デバッグ用。
                 $user_id = 'ituki';
                 // 保存先パス名
@@ -180,7 +184,9 @@ class PostController extends Controller
             );
 
             DB::commit();
-        } catch(\Exception $e) {
+        }
+        catch(\Exception $e)
+        {
             throwException($e);
             // TODO：例外発生時の画像アップロードはどうするか検討。
             logs()->error('例外が発生しました。'.$e);
@@ -207,10 +213,12 @@ class PostController extends Controller
 
         // ファイルアップロードとDB登録までを1トランザクションとする。
         DB::beginTransaction();
-        try {
+        try
+        {
             // NOTE：画像アップロードは任意のため判定を行う。
             $upload_post_img_url = null;
-            if ($post_img_file) {
+            if($post_img_file)
+            {
                 // NOTE：デバッグ用。
                 $user_id = 'ituki';
                 // 保存先パス名
@@ -230,7 +238,9 @@ class PostController extends Controller
             );
 
             DB::commit();
-        } catch(\Exception $e) {
+        }
+        catch(\Exception $e)
+        {
             throwException($e);
             // TODO：例外発生時の画像アップロードはどうするか検討。
             logs()->error('例外が発生しました。'.$e);
@@ -248,18 +258,16 @@ class PostController extends Controller
      */
     public function favorite(Request $request)
     {
-        if (!$request->ajax()) {
-            throw new BadRequestException('不正なアクセスです。');
-        }
+        if(!$request->ajax()) { throw new BadRequestException('不正なアクセスです。'); }
 
         $user_id = 'ituki';
 
         // ajaxで送信されたuser_idとpost_idを配列で取得する。
         $target_data = $request->target_data;
         $favorite_user_id = $target_data['favorite_user_id'];
-        $favorite_post_id = $target_data['favorite_post_id'];
+        $post_id = $target_data['favorite_post_id'];
 
-        if(!Post::where('post_id', $favorite_post_id)->first())
+        if(!Post::where('post_id', $post_id)->first())
         {
             // throw new NotFoundHttpException('投稿が見つかりませんでした。');
             return response()->json(['error' => '投稿が削除された可能性があります。']);
@@ -272,9 +280,9 @@ class PostController extends Controller
             return response()->json(['error' => 'ユーザーが退会した可能性があります。']);
         }
 
-        $this->userFavoritePostRepository->favorite($user_id, $favorite_user_id, $favorite_post_id);
+        $this->userFavoritePostRepository->favorite($user_id, $favorite_user_id, $post_id);
 
         // front側でお気に入りボタンの色を変更する処理を追加する。
-        return response()->json(['favorite_post_id' => $favorite_post_id]);
+        return response()->json(['favorite_post_id' => $post_id]);
     }
 }

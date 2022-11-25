@@ -1,6 +1,7 @@
 import exeAjax from './common/ajax_setup';
 
-$(function() {
+$(function()
+{
     // 投稿のアコーディオンを制御
     $('.card-open').on('click', function()
     {

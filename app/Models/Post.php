@@ -52,4 +52,41 @@ class Post extends Model
     {
         return $this->belongsTo('App\Models\Category', 'category_id', 'category_id');
     }
+
+    /**
+     * getUserFavoritePost
+     *
+     * @return UserFavoritePost[] $UserFavoritePosts
+     */
+    public function userFavoritePosts()
+    {
+        return $this->hasMany('App\Models\UserFavoritePost', 'post_id', 'post_id');
+    }
+
+    /**
+     * ログインユーザーが投稿をお気に入り登録しているかどうか判断します。
+     * NOTE:主にフロント側のお気に入りボタンの制御に使用します。
+     *
+     * @param string $user_id
+     * @return bool
+     */
+    public function isMyFavorite($user_id)
+    {
+        $UserFavoritePost = 
+            UserFavoritePost::where([
+                ['favorite_user_id', $user_id], 
+                ['post_id', $this->post_id]
+            ])->first();
+
+        if(is_null($UserFavoritePost))
+        {
+            // お気に入り登録していない場合
+            return false;
+        }
+        else
+        {
+            // お気に入り登録している場合
+            return true;
+        }
+    }
 }

@@ -5,7 +5,7 @@
 <div class="block-edit-index">
     <h1 class="mb-5 text-center">TimeLine</h1>
     @foreach($Posts as $Post)
-         <div class="row mb-5">
+        <div class="row mb-5">
             <div class="col">
                 <div class="border shadow-sm">
                     <div class="card-open card flex-md-row h-md-250">
@@ -25,7 +25,11 @@
                             </div>
                             <p>{{ $Post->post_text }}</p>
                             <span class="ajax_error_message"></span>
+                            @if($Post->isMyFavorite($user_id) == true)
+                            <i class="post_favorite_btn fa-solid fa-heart post_favorite_btn_added" data-favorite-post-id="{{ $Post->post_id }}" data-favorite-user-id="{{ $Post->user_id }}"></i>
+                            @else
                             <i class="post_favorite_btn fa-solid fa-heart" data-favorite-post-id="{{ $Post->post_id }}" data-favorite-user-id="{{ $Post->user_id }}"></i>
+                            @endif
                         </div>
                     </div>
                 </div>
