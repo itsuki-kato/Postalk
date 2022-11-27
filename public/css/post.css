@@ -27,9 +27,10 @@ textarea {
     font-size: 30px;
 }
 .post_favorite_btn:hover {
-    color: #ff0000;
+    color: #dc143c;
     cursor: pointer;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 .post_favorite_btn_added {
-    color: #dc143c;
+    color: #ff0000;
 }

@@ -267,20 +267,29 @@ class PostController extends Controller
 
         if(!Post::where('post_id', $post_id)->first())
         {
-            // throw new NotFoundHttpException('投稿が見つかりませんでした。');
             return response()->json(['error' => '投稿が削除された可能性があります。']);
         }
 
         // TODO：退会してユーザー削除すると関連データも全部削除しないといけないので(面倒くさい)、論理削除希望
         if(!User::where('user_id', $favorite_user_id)->first())
         {
-            // throw new NotFoundHttpException('投稿者が見つかりませんでした。');
             return response()->json(['error' => 'ユーザーが退会した可能性があります。']);
         }
 
-        $this->userFavoritePostRepository->favorite($user_id, $favorite_user_id, $post_id);
+        $exists = $this->userFavoritePostRepository->exists($user_id, $favorite_user_id, $post_id);
+        if($exists == false) // お気に入り登録されていなかったら登録処理
+        {
+            $this->userFavoritePostRepository->favorite($user_id, $favorite_user_id, $post_id);
+        }
+        else // お気に入り登録されていたら削除処理
+        {
+            $this->userFavoritePostRepository->removeFavorite($user_id, $favorite_user_id, $post_id);
+        }
 
         // front側でお気に入りボタンの色を変更する処理を追加する。
-        return response()->json(['favorite_post_id' => $post_id]);
+        return response()->json([
+            'favorite_post_id' => $post_id,
+            'exists' => $exists
+        ]);
     }
 }

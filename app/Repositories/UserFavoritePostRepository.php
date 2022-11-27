@@ -2,8 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Models\Post;
-use App\Models\User;
 use App\Models\UserFavoritePost;
 use Illuminate\Support\Facades\DB;
 
@@ -30,18 +28,27 @@ class UserFavoritePostRepository
      */
     public function favorite($user_id, $favorite_user_id, $post_id)
     {
+        $UserFavoritePost = UserFavoritePost::where([
+            ['user_id', '=', $user_id],
+            ['favorite_user_id', '=', $favorite_user_id],
+            ['post_id', '=', $post_id]
+        ])->first();
+
         DB::beginTransaction();
         try
         {
-            UserFavoritePost::create([
-                'user_id' => $user_id,
-                'favorite_user_id' => $favorite_user_id,
-                'post_id' => $post_id,
-                'favorite_type' => UserFavoritePost::TYPE_LIKE
-            ]);
+            if(is_null($UserFavoritePost)) // お気に入り登録されていなかったら登録
+            {
+                UserFavoritePost::create([
+                    'user_id' => $user_id,
+                    'favorite_user_id' => $favorite_user_id,
+                    'post_id' => $post_id,
+                    'favorite_type' => UserFavoritePost::TYPE_LIKE
+                ]);
+                logs()->info('お気に入り登録が完了しました。'.$post_id, ['Front' => 'post.favorite']);
 
-            DB::commit();
-            logs()->info('お気に入り登録が完了しました。'.$post_id, ['Front' => 'post.favorite']);
+                DB::commit();
+            }
         }
         catch (\Exception $e)
         {
@@ -51,6 +58,69 @@ class UserFavoritePostRepository
         }
 
         return;
+    }
+
+    /**
+     * お気に入り登録を削除します。
+     *
+     * @param string $user_id
+     * @param string $favorite_user_id
+     * @param string $post_id
+     * @return void
+     */
+    public function removeFavorite($user_id, $favorite_user_id, $post_id)
+    {
+        $UserFavoritePost = UserFavoritePost::where([
+            ['user_id', '=', $user_id],
+            ['favorite_user_id', '=', $favorite_user_id],
+            ['post_id', '=', $post_id]
+        ])->first();
+
+        DB::beginTransaction();
+        try
+        {
+            if($UserFavoritePost)
+            {
+                $UserFavoritePost->delete();
+                logs()->info('お気に入り削除が完了しました。'.$post_id, ['Front' => 'post.favorite']);
+
+                DB::commit();
+            }
+        }
+        catch (\Exception $e)
+        {
+            throwException($e);
+            logs()->info('例外が発生しました。'.$e);
+            DB::rollBack();
+        }
+
+        return;
+    }
+
+    /**
+     * お気に入り登録されているかどうかを判断します。
+     *
+     * @param string $user_id
+     * @param string $favorite_user_id
+     * @param string $post_id
+     * @return bool $exists
+     */
+    public function exists($user_id, $favorite_user_id, $post_id)
+    {
+        $UserFavoritePost = UserFavoritePost::where([
+            ['user_id', '=', $user_id],
+            ['favorite_user_id', '=', $favorite_user_id],
+            ['post_id', '=', $post_id]
+        ])->first();
+
+        if($UserFavoritePost) // お気に入り登録されていた場合
+        {
+            return true;
+        }
+        else // お気に入り登録されていなかった場合
+        {
+            return false;
+        }
     }
 
 }

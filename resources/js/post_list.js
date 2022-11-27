@@ -20,7 +20,7 @@ $(function()
             'favorite_user_id' : favorite_user_id
         };
 
-        // Ajaxでお気に入り登録
+        // Ajaxでお気に入り登録or削除
         exeAjax('POST', '/Postalk/public/post/favorite', 'json', target_data)
         .then(
             function(data) // 成功した時
@@ -48,10 +48,17 @@ $(function()
         );
     });
 
-    // お気に入り登録後のボタンの色を変更
+    // お気に入り登録/削除後のボタンの色を変更
     function changeBtn(data)
     {
-        $(`[data-favorite-post-id="${data.favorite_post_id}"]`).addClass('post_favorite_btn_added');
+        if(data.exists == false)
+        {
+            $(`[data-favorite-post-id="${data.favorite_post_id}"]`).addClass('post_favorite_btn_added');
+        }
+        else
+        {
+            $(`[data-favorite-post-id="${data.favorite_post_id}"]`).removeClass('post_favorite_btn_added');
+        }
         return;
     }
 });
