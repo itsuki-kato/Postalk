@@ -16,6 +16,10 @@
             <td><input type="password" name="password" required></td>
         </tr>
         <tr>
+            <th>パスワード(再入力)*</th>
+            <td><input type="password" name="repassword" required></td>
+        </tr>
+        <tr>
             <th>メールアドレス*</th>
             <td><input type="email" name="email" required></td>
         </tr>

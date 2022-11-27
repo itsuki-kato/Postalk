@@ -49,4 +49,42 @@ class UserCategoryRepository
 
         return $UserCategories;
     }
+
+    /**
+     * ユーザーカテゴリ情報一覧取得
+     *
+     * @param string $user_id
+     * @return Catgeory $user_category_list
+    */
+    public function get_user_category_list($user_id)
+    {
+        $user_category_list = DB::table('t_user_category')->where('user_id', $user_id)->get();
+
+        return $user_category_list;
+    }
+
+    /**
+     * ユーザーカテゴリ情報登録
+     *
+     * @param string $user_id
+     * @param int    $category_id
+     * @return void
+    */
+    public function create_user_category($user_id, $category_id)
+    {
+        // TODO: try-catch,transactionの記述箇所検討
+        try {
+            DB::beginTransaction();
+
+            DB::table('t_user_category')->insert([
+                'user_id'   => $user_id,
+                'category_id' => $category_id,
+            ]);
+
+            DB::commit();
+        } catch (Throwable $e) {
+            // TODO:エラーメッセージ出力
+            DB::rollBack();
+        }
+    }
 }

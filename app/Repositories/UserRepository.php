@@ -16,9 +16,13 @@ class UserRepository
      *
      * @return User $user_list
     */
-    public function get_user_list()
+    public function get_user_list($user_id_list = null)
     {
-        $user_list = DB::table('t_user')->get();
+        if (empty($user_id_list)) {
+            $user_list = DB::table('t_user')->get();
+        } else {
+            $user_list = DB::table('t_user')->whereIn('user_id', $user_id_list)->get();
+        }
 
         return $user_list;
     }
@@ -34,9 +38,26 @@ class UserRepository
     {
         // TODO: パワープレーしない
         if (!empty($password)) {
-            $user = DB::table('t_user')->where('user_id', $user_id)->where('password', $password)->first();
+            $user = DB::table('t_user')
+            ->select('user_id')
+            ->where('user_id', $user_id)
+            ->where('password', $password)
+            ->first();
         } else {
-            $user = DB::table('t_user')->where('user_id', $user_id)->first();
+            $user = DB::table('t_user')
+            ->select(
+                'user_id',
+                'user_name',
+                'email',
+                'sex',
+                'birth',
+                'address',
+                'pf_img_url',
+                'bg_img_url',
+                'intro_text'
+            )
+            ->where('user_id', $user_id)
+            ->first();
         }
 
         return $user;

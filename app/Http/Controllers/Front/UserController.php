@@ -4,23 +4,25 @@ namespace App\Http\Controllers\Front;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Repositories\UserRepository;
-use App\Repositories\CategoryRepository;;
 use App\Http\Controllers\Controller;
-use App\Common\Consts;
+use App\Repositories\UserRepository;
 
+//use App\Http\Controllers\Front\Controller;
 class UserController extends Controller
 {
     /**
      * UserController constructor
      * @param UserRepository $userRepository
-     * @param SampleService $sampleService
      */
     public function __construct(
-        private UserRepository $userRepository,
-        private CategoryRepository $CategoryRepository
+        private UserRepository $userRepository
     )
-    {}
+    {
+        $this->UserCategoryController = app()->make('App\Http\Controllers\Front\UserCategoryController');
+        $this->UserFollowController   = app()->make('App\Http\Controllers\Front\UserFollowController');
+        $this->UserBlockController    = app()->make('App\Http\Controllers\Front\UserBlockController');
+        //$this->UserDmApplyController  = app()->make('App\Http\Controllers\Front\UserDmApplyController');
+    }
 
     /**
      * ログイン
@@ -39,12 +41,15 @@ class UserController extends Controller
         if (empty($user)) {
             return view('user/login')->with('error','ユーザーIDかパスワードが違います');
         }
-        $this->init_user_session($user->user_id);
-        $this->init_user_category_list_session($request->user_id);
 
-        return redirect(route('user.top', [
-            'user_id' => $user->user_id
-        ]));
+        $this->init_user_session($user->user_id);
+        $this->UserCategoryController->init_category_list_session($user->user_id);
+        $this->UserFollowController->init_follow_list_session($user->user_id);
+        $this->UserFollowController->init_follower_list_session($user->user_id);
+        $this->UserBlockController->init_block_list_session($user->user_id);
+        //$this->UserDmApplyController->init_dm_list_session($user->user_id);
+
+        return redirect('/user/mypage');
     }
 
     /**
@@ -70,12 +75,18 @@ class UserController extends Controller
             empty($request->user_id)
         ||  empty($request->user_name)
         ||  empty($request->password)
+        ||  empty($request->repassword)
         ||  empty($request->email)
         ) {
-            return view('user/login')->with('error','未入力の項目があります');
+            return view('user/create')->with('error','未入力の項目があります');
+        }
+
+        if ($request->password !== $request->repassword) {
+            return view('user/create')->with('error','パスワードが一致しません');
         }
 
         $user_list = $this->userRepository->get_user_list();
+
         foreach($user_list as $user) {
             if ($user->user_id == $request->user_id) {
                 return view('user/create')->with('error','使用されているユーザーIDです');
@@ -95,17 +106,10 @@ class UserController extends Controller
             $request->address
         );
 
-        // TODO: 別箇所にユーザー登録処理を記載。※下記は仮
-        $this->CategoryRepository->create_user_category($request->user_id, "sport");
-        $this->CategoryRepository->create_user_category($request->user_id, "comic");
-        $this->CategoryRepository->create_user_category($request->user_id, "love");
+        $this->init_user_session($user->user_id);
+        $this->UserCategoryController->init_category_list_session($user->user_id);
 
-        $this->init_user_session($request->user_id);
-        $this->init_user_category_list_session($request->user_id);
-
-        return redirect(route('user.top', [
-            'user_id' => $request->user_id
-        ]));
+        return redirect('/user/mypage');
     }
 
     /**
@@ -116,7 +120,7 @@ class UserController extends Controller
      */
     public function update_user(Request $request)
     {
-        $user_id    = $request->user_id;
+        $user_id    = session('user.user_id');
         $user_name  = null;
         $email      = null;
         $address    = null;
@@ -155,24 +159,7 @@ class UserController extends Controller
 
         $this->init_user_session($user_id);
 
-        return redirect(route('user.top', [
-            'user_id' => $request->user_id
-        ]));
-    }
-
-    /**
-     * ユーザーカテゴリ選択
-     *
-     * @param Request $request
-     * @return void
-     */
-    public function select_user_category(Request $request)
-    {
-        $this->set_user_select_category_session($request->category_id);
-
-        return redirect(route('user.top', [
-            'user_id' => $request->user_id
-        ]));
+        return redirect('/user/mypage');
     }
 
     /**
@@ -183,8 +170,6 @@ class UserController extends Controller
      */
     public function init_user_session($user_id)
     {
-        session()->forget('user');
-
         $user = $this->userRepository->get_user($user_id);
 
         session()->put('user', [
@@ -198,33 +183,5 @@ class UserController extends Controller
             'bg_img_url' => $user->bg_img_url,
             'intro_text' => $user->intro_text
         ]);
-    }
-
-    /**
-     * ユーザーカテゴリ一覧セッション情報設定
-     *
-     * @param string $user_id
-     * @return void
-     */
-    public function init_user_category_list_session($user_id)
-    {
-        $user_category_list = $this->CategoryRepository->get_user_category_list($user_id);
-
-        foreach($user_category_list as $index => $user_category){
-            session()->put('user_category_list.'.$index, [
-                'category_id' => $user_category->category_id
-            ]);
-        }
-    }
-
-    /**
-     * ユーザー選択カテゴリセッション情報設定
-     *
-     * @param string $category_id
-     * @return void
-     */
-    public function set_user_select_category_session($category_id)
-    {
-        session()->put('user_select_category', $category_id);
     }
 }
