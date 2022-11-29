@@ -1,7 +1,10 @@
 @extends('layouts.layout')
 
 @section('content')
-    {{ Form::open(['url' => request()->path(), 'files' => true]) }}
+    <h1>プロフィール</h1>
+    <br>
+
+    {{ Form::open(['url' => 'user/update_profile', 'files' => true]) }}
     <table>
         <tr>
             <th>ユーザー名</th>
@@ -21,7 +24,6 @@
                 <input type="file" name="pf_img">
                 <input type="hidden" name="old_pf_img_url" value="{{!empty(session('user.pf_img_url')) ? session('user.pf_img_url') : ''}}">
             </td>
-
         </tr>
         <tr>
             <th>背景画像</th>
