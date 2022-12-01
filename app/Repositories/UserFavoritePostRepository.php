@@ -70,22 +70,19 @@ class UserFavoritePostRepository
      */
     public function removeFavorite($user_id, $favorite_user_id, $post_id)
     {
-        $UserFavoritePost = UserFavoritePost::where([
-            ['user_id', '=', $user_id],
-            ['favorite_user_id', '=', $favorite_user_id],
-            ['post_id', '=', $post_id]
-        ])->first();
-
+        
         DB::beginTransaction();
         try
         {
-            if($UserFavoritePost)
-            {
-                $UserFavoritePost->delete();
-                logs()->info('お気に入り削除が完了しました。'.$post_id, ['Front' => 'post.favorite']);
+            // NOTE：primaryKey複数＋中間テーブルだとEloquentのdelete()が使用できない
+            DB::table('t_user_favorite_post')->where([
+                ['user_id', '=', $user_id],
+                ['favorite_user_id', '=', $favorite_user_id],
+                ['post_id', '=', $post_id]
+            ])->delete();
+            logs()->info('お気に入り削除が完了しました。'.$post_id, ['Front' => 'post.favorite']);
 
-                DB::commit();
-            }
+            DB::commit();
         }
         catch (\Exception $e)
         {

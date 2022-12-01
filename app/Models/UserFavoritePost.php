@@ -15,6 +15,12 @@ class UserFavoritePost extends Model
 
     protected $table = 't_user_favorite_post';
 
+    protected $primaryKey = [
+        'user_id', 
+        'favorite_user_id', 
+        'post_id'
+    ];
+
     protected $fillable = [
         'user_id',
         'favorite_user_id',

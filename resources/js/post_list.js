@@ -38,7 +38,7 @@ $(function()
                 // ボタンの色を変更
                 changeBtn(data);
             },
-            function() // 失敗した時
+            function(data) // 失敗した時
             {
                 console.log('ajax通信に失敗しました');
                 console.log(jqXHR.status);
