@@ -28,7 +28,7 @@ class UserCategoryRepository
         {
             // カテゴリidからカテゴリ名を取得。
            $category_neme = DB::table('m_category')
-                ->where('category_id', $user_category_id)
+                ->where('id', $user_category_id)
                 ->value('category_name');
 
             // [cateogry_id => category_name]の形式に整形。

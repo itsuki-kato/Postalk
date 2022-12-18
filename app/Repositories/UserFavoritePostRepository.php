@@ -5,8 +5,6 @@ namespace App\Repositories;
 use App\Models\UserFavoritePost;
 use Illuminate\Support\Facades\DB;
 
-use function PHPUnit\Framework\throwException;
-
 class UserFavoritePostRepository
 {
     /**
@@ -29,7 +27,7 @@ class UserFavoritePostRepository
     public function favorite($user_id, $favorite_user_id, $post_id)
     {
         $UserFavoritePost = UserFavoritePost::where([
-            ['id', '=', $post_id],
+            ['post_id', '=', $post_id],
             ['user_id', '=', $user_id],
             ['favorite_user_id', '=', $favorite_user_id]
         ])->first();
@@ -40,7 +38,7 @@ class UserFavoritePostRepository
             if(is_null($UserFavoritePost)) // お気に入り登録されていなかったら登録
             {
                 UserFavoritePost::create([
-                    'id'               => $post_id,
+                    'post_id'               => $post_id,
                     'user_id'          => $user_id,
                     'favorite_user_id' => $favorite_user_id,
                     'favorite_type'    => UserFavoritePost::TYPE_LIKE
@@ -53,7 +51,8 @@ class UserFavoritePostRepository
         }
         catch (\Exception $e)
         {
-            throwException($e);
+            throw new Exception('例外が発生しました。'.$e, 1);
+            
             logs()->info('例外が発生しました。'.$e);
             DB::rollBack();
         }
@@ -77,7 +76,7 @@ class UserFavoritePostRepository
         {
             // NOTE：primaryKey複数＋中間テーブルだとEloquentのdelete()が使用できない
             DB::table('t_user_favorite_post')->where([
-                ['id', '=', $post_id],
+                ['post_id', '=', $post_id],
                 ['user_id', '=', $user_id],
                 ['favorite_user_id', '=', $favorite_user_id]
             ])->delete();
@@ -88,7 +87,8 @@ class UserFavoritePostRepository
         }
         catch (\Exception $e)
         {
-            throwException($e);
+            throw new Exception('例外が発生しました。'.$e, 1);
+            
             logs()->info('例外が発生しました。'.$e);
             DB::rollBack();
         }
@@ -109,7 +109,7 @@ class UserFavoritePostRepository
         $UserFavoritePost = UserFavoritePost::where([
             ['user_id', '=', $user_id],
             ['favorite_user_id', '=', $favorite_user_id],
-            ['id', '=', $post_id]
+            ['post_id', '=', $post_id]
         ])->first();
 
         if($UserFavoritePost) // お気に入り登録されていた場合

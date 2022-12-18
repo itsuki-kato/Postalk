@@ -30,7 +30,7 @@ Route::post('/create', [UserController::class, 'create_user']);     // ユーザ
 Route::get('/post/list', [PostController::class, 'list'])->name('post.list'); // 一覧表示
 Route::get('/post', [PostController::class, 'index'])->name('post.index'); // 入力画面
 Route::get('/post/{post_id}/edit', [PostController::class, 'editIndex'])->name('post.editIndex'); // 入力画面
-Route::post('/post/valid', [PostController::class, 'store'])->name('post.store'); // 新規作成or編集
+Route::post('/post/store_post', [PostController::class, 'store'])->name('post.store'); // 新規作成or編集
 Route::post('/post/favorite', [PostController::class, 'favorite'])->name('post.favorite'); // 投稿お気に入り登録
 
 // Top

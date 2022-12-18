@@ -27,11 +27,11 @@
                             <span class="ajax_error_message"></span>
                             @if($Post->isMyFavorite($user_id) == true)
                                 <i class="post_favorite_btn fa-solid fa-heart post_favorite_btn_added" 
-                                    data-favorite-post-id="{{ $Post->post_id }}" 
+                                    data-favorite-post-id="{{ $Post->id }}" 
                                     data-favorite-user-id="{{ $Post->user_id }}"></i>
                             @else
                                 <i class="post_favorite_btn fa-solid fa-heart"
-                                 data-favorite-post-id="{{ $Post->post_id }}" 
+                                 data-favorite-post-id="{{ $Post->id }}" 
                                  data-favorite-user-id="{{ $Post->user_id }}"></i>
                             @endif
                         </div>

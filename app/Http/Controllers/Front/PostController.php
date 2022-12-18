@@ -14,6 +14,7 @@ use App\Repositories\UserFavoritePostRepository;
 use Illuminate\Support\Facades\Auth;
 use App\Services\FileService;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use App\Http\Requests\PostRequest;
 
 class PostController extends Controller
 {
@@ -35,7 +36,7 @@ class PostController extends Controller
     public function list()
     {
         // NOTE：デバッグ用。
-        $user_id = 'ituki';
+        $user_id = 1;
 
         $Posts = $this->postRepository->getListForTimeLine($user_id);
 
@@ -50,7 +51,7 @@ class PostController extends Controller
     public function index(Request $request)
     {
         // NOTE：デバッグ用。
-        $user_id = 'ituki';
+        $user_id = 1;
 
         $Post = new Post();
 
@@ -68,7 +69,7 @@ class PostController extends Controller
      */
     public function editIndex(Request $request, $post_id)
     {
-        $user_id = 'ituki';
+        $user_id = 1;
         $Post = Post::where('id', $post_id)->first();
 
         $user_category_list = $this->userCategoryRepository->getListForSelect($user_id);
@@ -79,11 +80,11 @@ class PostController extends Controller
     /**
      * 投稿の新規作成を行います。
      *
-     * @param PostRequest $post_request
+     * @param Request $post_request
      */
-    public function store(PostRequest $post_request)
+    public function store(Request $post_request)
     {
-        $user_id = 'ituki';
+        $user_id = 1;
 
         $mode = $post_request->get('mode');
         $post_img_file = $post_request->file('post_img_url');
@@ -139,7 +140,7 @@ class PostController extends Controller
     {
         if(!$request->ajax()) { throw new BadRequestException('不正なアクセスです。'); }
 
-        $user_id = 'ituki';
+        $user_id = 1;
 
         // ajaxで送信されたuser_idとpost_idを配列で取得する。
         $target_data = $request->target_data;
@@ -151,7 +152,7 @@ class PostController extends Controller
         }
 
         // TODO：退会してユーザー削除すると関連データも全部削除しないといけないので(面倒くさい)、論理削除希望
-        if(!User::where('user_id', $favorite_user_id)->first()) {
+        if(!User::where('id', $favorite_user_id)->first()) {
             return response()->json(['error' => 'ユーザーが退会した可能性があります。']);
         }
 

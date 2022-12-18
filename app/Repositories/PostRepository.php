@@ -64,13 +64,14 @@ class PostRepository
                 'post_text'    => $post_text,
                 'post_img_url' => $upload_post_img_url
             ]);
-            logs()->info('投稿の新規作成が完了しました。'. ['Front' => 'post.favorite']);
+            // logs()->info('投稿の新規作成が完了しました。'.['Front' => 'post.favorite']);
 
-                DB::commit();
+            DB::commit();
         }
         catch (\Exception $e)
         {
-            throwException($e);
+            throw new \Exception('例外が発生しました。'.$e, 1);
+            
             logs()->info('例外が発生しました。'.$e);
             DB::rollBack();
         }
@@ -100,18 +101,19 @@ class PostRepository
                     'post_text'    => $post_text,
                     'post_img_url' => $upload_post_img_url
             ]);
-            logs()->info('投稿の編集が完了しました。'.$post_id.['Front' => 'post.favorite']);
+            logs()->info('投稿の編集が完了しました。'.$post_id);
 
             DB::commit();
         }
         catch (\Exception $e)
         {
-            throwException($e);
+            throw new \Exception('例外が発生しました。', 1, $e);
+            
             logs()->info('例外が発生しました。'.$e);
             DB::rollBack();
         }
 
-        logs()->info('投稿の編集が完了しました。'.$post_id, ['Front' => 'post.create']);
+        logs()->info('投稿の編集が完了しました。'.$post_id);
 
         return;
     }

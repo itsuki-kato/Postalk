@@ -21,6 +21,9 @@ return new class extends Migration
             $table->text('post_text');
             $table->string('post_img_url');
             $table->timestamps();
+
+            // 定義変更
+            $table->string('post_img_url')->nullable(null)->change();
         });
     }
 
