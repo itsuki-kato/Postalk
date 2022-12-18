@@ -16,18 +16,10 @@ class UserCategory extends Model
     protected $fillable = [
         'user_id',
         'category_id',
-        'create_at',
-        'update_at'
     ];
 
     // 参照しないカラムを定義
     protected $gurded = [];
-
-    // 主キーのautoincrementを無効化
-    public $incrementing = false;
-
-    // timestampの
-    public $timestamps = false;
 
     /**
      * getUser
@@ -36,7 +28,7 @@ class UserCategory extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\Models\User', 'user_id', 'user_id');
+        return $this->belongsTo('App\Models\User', 'user_id');
     }
 
     /**
@@ -46,6 +38,6 @@ class UserCategory extends Model
      */
     public function category()
     {
-        return $this->belongsTo('App\Models\Category', 'category_id', 'category_id');
+        return $this->belongsTo('App\Models\Category', 'category_id');
     }
 }

@@ -1,0 +1,14 @@
+.mypage-profile-box {
+    width: 300px;
+    height: auto;
+}
+.mypage-profile-img {
+    width: 150px;
+    height: 150px;
+}
+.d-felx {
+    display: flex;
+}
+.flex-item {
+
+}

@@ -12,7 +12,7 @@
             </div>
         @endif
 
-        {{ Form::open(['route' => ['post.valid'], 'method' => 'post', 'files' => true]) }}
+        {{ Form::open(['route' => ['post.store'], 'method' => 'post', 'files' => true]) }}
             {{-- カテゴリ選択 --}}
             <div class="form-group form-inline input-group-sm mt-5">
                 <label for="user_category" class="form-label">カテゴリ選択</label>
@@ -64,9 +64,10 @@
 
             {{-- 作成ボタン --}}
             <div class="text-center mt-5">
-                @if(isset($Post->post_id))
+                @if(isset($Post->id))
                     <button class="btn btn-primary btn-lg" type="submit" name="mode" value="edit">編集保存</button>
-                    <input type="hidden" name="post_id" value="{{ $Post->post_id }}">
+                    <!-- 編集時はpostのidを渡す -->
+                    <input type="hidden" name="post_id" value="{{ $Post->id }}">
                 @else
                     <button class="btn btn-success btn-lg" type="submit" name="mode" value="create">新規作成</button>
                 @endif

@@ -52,7 +52,7 @@ class User extends Authenticatable
      */
     public function userCategories()
     {
-        return $this->hasMany('App\Models\UserCategory', 'user_id', 'user_id');
+        return $this->hasMany('App\Models\UserCategory', 'user_id');
     }
 
     /**
@@ -62,6 +62,6 @@ class User extends Authenticatable
      */
     public function posts()
     {
-        return $this->hasMany('App\Models\Post', 'user_id', 'user_id');
+        return $this->hasMany('App\Models\Post', 'user_id');
     }
 }

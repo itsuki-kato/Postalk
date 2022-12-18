@@ -20,18 +20,18 @@ class UserFavoritePostRepository
 
     /**
      * 投稿をお気に入り登録します。
-     *
+     * 
+     * @param string $post_id
      * @param string $user_id
      * @param string $favorite_user_id
-     * @param string $post_id
      * @return void
      */
     public function favorite($user_id, $favorite_user_id, $post_id)
     {
         $UserFavoritePost = UserFavoritePost::where([
+            ['id', '=', $post_id],
             ['user_id', '=', $user_id],
-            ['favorite_user_id', '=', $favorite_user_id],
-            ['post_id', '=', $post_id]
+            ['favorite_user_id', '=', $favorite_user_id]
         ])->first();
 
         DB::beginTransaction();
@@ -40,11 +40,12 @@ class UserFavoritePostRepository
             if(is_null($UserFavoritePost)) // お気に入り登録されていなかったら登録
             {
                 UserFavoritePost::create([
-                    'user_id' => $user_id,
+                    'id'               => $post_id,
+                    'user_id'          => $user_id,
                     'favorite_user_id' => $favorite_user_id,
-                    'post_id' => $post_id,
-                    'favorite_type' => UserFavoritePost::TYPE_LIKE
+                    'favorite_type'    => UserFavoritePost::TYPE_LIKE
                 ]);
+
                 logs()->info('お気に入り登録が完了しました。'.$post_id, ['Front' => 'post.favorite']);
 
                 DB::commit();
@@ -63,9 +64,9 @@ class UserFavoritePostRepository
     /**
      * お気に入り登録を削除します。
      *
+     * @param string $post_id
      * @param string $user_id
      * @param string $favorite_user_id
-     * @param string $post_id
      * @return void
      */
     public function removeFavorite($user_id, $favorite_user_id, $post_id)
@@ -76,10 +77,11 @@ class UserFavoritePostRepository
         {
             // NOTE：primaryKey複数＋中間テーブルだとEloquentのdelete()が使用できない
             DB::table('t_user_favorite_post')->where([
+                ['id', '=', $post_id],
                 ['user_id', '=', $user_id],
-                ['favorite_user_id', '=', $favorite_user_id],
-                ['post_id', '=', $post_id]
+                ['favorite_user_id', '=', $favorite_user_id]
             ])->delete();
+
             logs()->info('お気に入り削除が完了しました。'.$post_id, ['Front' => 'post.favorite']);
 
             DB::commit();
@@ -107,7 +109,7 @@ class UserFavoritePostRepository
         $UserFavoritePost = UserFavoritePost::where([
             ['user_id', '=', $user_id],
             ['favorite_user_id', '=', $favorite_user_id],
-            ['post_id', '=', $post_id]
+            ['id', '=', $post_id]
         ])->first();
 
         if($UserFavoritePost) // お気に入り登録されていた場合

@@ -20,18 +20,10 @@ class Post extends Model
         'post_title',
         'post_text',
         'post_img_url',
-        'create_at',
-        'update_at'
     ];
 
     // 参照しないカラムを定義
     protected $gurded = [];
-
-    // 主キーのautoincrementを無効化
-    public $incrementing = false;
-
-    // timestampの
-    public $timestamps = false;
 
     /**
      * getUser
@@ -40,7 +32,7 @@ class Post extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\Models\User', 'user_id', 'user_id');
+        return $this->belongsTo('App\Models\User', 'user_id');
     }
 
     /**
@@ -50,7 +42,7 @@ class Post extends Model
      */
     public function category()
     {
-        return $this->belongsTo('App\Models\Category', 'category_id', 'category_id');
+        return $this->belongsTo('App\Models\Category', 'category_id');
     }
 
     /**
@@ -60,7 +52,7 @@ class Post extends Model
      */
     public function userFavoritePosts()
     {
-        return $this->hasMany('App\Models\UserFavoritePost', 'post_id', 'post_id');
+        return $this->hasMany('App\Models\UserFavoritePost', 'post_id');
     }
 
     /**
@@ -75,16 +67,13 @@ class Post extends Model
         $UserFavoritePost = 
             UserFavoritePost::where([
                 ['favorite_user_id', $user_id], 
-                ['post_id', $this->post_id]
+                ['post_id', $this->id]
             ])->first();
 
-        if(is_null($UserFavoritePost))
-        {
+        if(is_null($UserFavoritePost)) {
             // お気に入り登録していない場合
             return false;
-        }
-        else
-        {
+        } else {
             // お気に入り登録している場合
             return true;
         }

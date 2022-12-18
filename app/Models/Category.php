@@ -18,7 +18,7 @@ class Category extends Model
      */
     public function userCategories()
     {
-        return $this->hasMany('App\Models\UserCategory', 'category_id', 'category_id');
+        return $this->hasMany('App\Models\UserCategory', 'category_id');
     }
 
     /**
@@ -28,6 +28,6 @@ class Category extends Model
      */
     public function Posts()
     {
-        return $this->hasMany('App\Models\Post', 'category_id', 'category_id');
+        return $this->hasMany('App\Models\Post', 'category_id');
     }
 }

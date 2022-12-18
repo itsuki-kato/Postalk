@@ -15,29 +15,15 @@ class UserFavoritePost extends Model
 
     protected $table = 't_user_favorite_post';
 
-    protected $primaryKey = [
-        'user_id', 
-        'favorite_user_id', 
-        'post_id'
-    ];
-
     protected $fillable = [
         'user_id',
         'favorite_user_id',
         'post_id',
         'favorite_type',
-        'create_at',
-        'update_at'
     ];
 
     // 参照しないカラムを定義
     protected $gurded = [];
-
-    // 主キーのautoincrementを無効化
-    public $incrementing = false;
-
-    // timestampの
-    public $timestamps = false;
 
     /**
      * getUser
@@ -46,7 +32,7 @@ class UserFavoritePost extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\Models\User', 'user_id', 'user_id');
+        return $this->belongsTo('App\Models\User', 'user_id');
     }
 
     /**
@@ -56,7 +42,7 @@ class UserFavoritePost extends Model
      */
     public function post()
     {
-        return $this->belongsTo('App\Models\Post', 'post_id', 'post_id');
+        return $this->belongsTo('App\Models\Post', 'post_id');
     }
 
     /**
