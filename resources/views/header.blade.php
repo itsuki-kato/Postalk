@@ -12,8 +12,14 @@
                         <ul class="list-unstyled">
                             <li><a href="{{ url('/create') }}" class="text-white">ユーザー登録</a></li>
                             <li><a href="{{ url('/login') }}" class="text-white">ログイン</a></li>
-                            <li><a href="{{ url('/logout') }}" class="text-white">ログアウト</a></li>
-                            
+                            <li>
+                                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="text-white">
+                                ログアウト
+                                </a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                    @csrf
+                                </form>
+                            </li>
                             <li><a href="{{ route('post.list') }}" class="text-white">タイムライン</a></li>
                             <li><a href="{{ route('post.index') }}" class="text-white">投稿作成</a></li>
                             <li><a href="{{ route('post.editIndex', ['post_id' => 1]) }}" class="text-white">投稿編集</a></li>
