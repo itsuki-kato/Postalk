@@ -15,11 +15,17 @@ return new class extends Migration
     {
         Schema::create('t_user', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->string('user_id')->unique();
+            $table->string('user_name');
             $table->string('password');
             $table->rememberToken();
+            $table->integer('sex')->nullable();
+            $table->date('birth')->nullable();
+            $table->string('pf_img_url')->nullable();
+            $table->string('bg_img_url')->nullable();
+            $table->string('intro')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
         });
     }

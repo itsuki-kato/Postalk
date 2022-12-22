@@ -1,6 +1,8 @@
 import _ from 'lodash';
 window._ = _;
 
+import 'bootstrap';
+
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
  * to our Laravel back-end. This library automatically handles sending the
@@ -33,6 +35,6 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     enabledTransports: ['ws', 'wss'],
 // });
 
-// jQueryã‚’æœ‰åŠ¹ã«ã™ã‚‹ã€‚
+// jQuery‚ğ—LŒø‚É‚·‚éB
 import jQuery from 'jquery';
 window.$ = jQuery;
