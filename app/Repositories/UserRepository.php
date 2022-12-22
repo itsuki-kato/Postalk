@@ -111,7 +111,7 @@ class UserRepository
      * @param string $address
      * @return void
     */
-    public function update_user($user_id, $user_name, $email, $address = null, $pf_img_url = null, $bg_img_url = null, $intro_text = null)
+    public function update_user($user_id, $user_name, $email, $address = null, $pf_img_url = null, $bg_img_url = null, $intro = null)
     {
         // TODO: try-catch,transactionの記述箇所検討
         try {
@@ -123,7 +123,7 @@ class UserRepository
                 'address'    => $address,
                 'pf_img_url' => $pf_img_url,
                 'bg_img_url' => $bg_img_url,
-                'intro_text' => $intro_text,
+                'intro' => $intro,
             ]);
 
             DB::commit();

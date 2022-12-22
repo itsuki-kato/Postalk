@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Front\UserController;
 use App\Http\Controllers\Front\PostController;
 
 /*
@@ -25,5 +26,7 @@ Route::post('/post/store_post', [PostController::class, 'store'])->name('post.st
 Route::post('/post/favorite', [PostController::class, 'favorite'])->name('post.favorite'); // 投稿お気に入り登録                                        // フォロー解除
 
 Route::group(['middleware' => 'auth'], function () {
-    Route::get('/', function () { return view('user/mypage'); }) ->name('user.mypage');
+    Route::get('/',        function () { return view('user/mypage'); })  ->name('user.mypage');
+    Route::get('/profile', function () { return view('user/profile'); }) ->name('user.profile');
+    Route::post('/update_profile', [UserController::class, 'update_profile']); //プロフィール更新
 });

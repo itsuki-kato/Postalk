@@ -4,40 +4,40 @@
     <h1>プロフィール</h1>
     <br>
 
-    {{ Form::open(['url' => 'user/update_profile', 'files' => true]) }}
+    {{ Form::open(['url' => '/update_profile', 'files' => true]) }}
     <table>
         <tr>
             <th>ユーザー名</th>
-            <td><input type="text" name="user_name" value={{session('user.user_name')}}></td>
+            <td><input type="text" name="user_name" value="{{Auth::user()->user_name}}"></td>
         </tr>
         <tr>
             <th>メールアドレス</th>
-            <td><input type="email" name="email" value={{session('user.email')}}></td>
+            <td><input type="email" name="email" value="{{Auth::user()->email}}"></td>
         </tr>
         <tr>
             <th>住所</th>
-            <td><input type="text" name="address" value={{session('user.address')}}></td>
+            <td><input type="text" name="address" value="{{Auth::user()->address}}"></td>
         </tr>
         <tr>
             <th>プロフィール画像</th>
             <td>
                 <input type="file" name="pf_img">
-                <input type="hidden" name="old_pf_img_url" value="{{!empty(session('user.pf_img_url')) ? session('user.pf_img_url') : ''}}">
+                <input type="hidden" name="old_pf_img_url" value="{{Auth::user()->pf_img_url}}">
             </td>
         </tr>
         <tr>
             <th>背景画像</th>
             <td>
                 <input type="file" name="bg_img">
-                <input type="hidden" name="old_bg_img_url" value="{{!empty(session('user.bg_img_url')) ? session('user.bg_img_url') : ''}}">
+                <input type="hidden" name="old_bg_img_url" value="{{Auth::user()->bg_img_url}}">
             </td>
 
         </tr>
         <tr>
             <th>自己紹介文</th>
             <td>
-                <textarea name="intro_text">
-                    {{session()->get('user.intro_text')}}
+                <textarea name="intro">
+                    {{Auth::user()->intro}}
                 </textarea>
             </td>
         </tr>
