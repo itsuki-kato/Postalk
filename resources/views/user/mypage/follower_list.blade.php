@@ -1,6 +1,6 @@
-@extends('layouts.layout')
+@extends('user.mypage.mypage_header')
 
-@section('content')
+@section('mypage_content')
 
     <h1>フォロワー一覧</h1>
     <br>

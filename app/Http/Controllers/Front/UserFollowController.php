@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Front;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\UserFollow;
 use App\Repositories\UserRepository;
 use App\Repositories\UserFollowRepository;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class UserFollowController extends Controller
 {
@@ -22,28 +25,79 @@ class UserFollowController extends Controller
     {}
 
     /**
-     * フォロー
+     * フォロー申請
      *
      * @param Request $request
      * @return void
      */
-    public function follow(Request $request)
+    public function apply(Request $request)
     {
         if(!$request->ajax()) { throw new BadRequestHttpException('不正なアクセスです。'); }
-
-        // TODO:渡されたユーザーIDとログインユーザーが一致しているか判定。
 
         $target_data = $request->target_data;
         $user_id = $target_data['user_id'];
         $follow_user_id = $target_data['follow_user_id'];
 
-        // TODO:渡されたユーザーIDとログインユーザーが一致しているか判定。
+        // デバッグ用
+        $follow_user_id = 21;
 
-        $this->userFollowRepository->create_user_follow($user_id, $follow_user_id);
+        // ユーザーが一致しなかったらログアウトさせる
+        if(Auth::user()->id != $user_id) {
+            return redirect('/logout');
+        }
+
+        $this->userFollowRepository->apply($user_id, $follow_user_id);
 
         return response()->json([
-            'user_id' => $user_id,
-            'follow_user_id' => $follow_user_id
+            'user_id'        => $user_id,
+            'follow_user_id' => $follow_user_id,
+            'follow_status'    => UserFollow::FOLLOW_APPLY
+        ]);
+    }
+
+    /**
+     * フォロー中にステータス変更
+     * NOTE：フォロー申請されたユーザーがこの操作を行う。
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function permit(Request $request)
+    {
+        if(!$request->ajax()) { throw new BadRequestHttpException('不正なアクセスです。'); }
+
+        $target_data = $request->target_data;
+        $user_id = $target_data['user_id'];
+        $follow_user_id = $target_data['follow_user_id'];
+
+        // follow_user_idとログインユーザーが一致しなかったら操作させない
+        if(Auth::user()->id != $follow_user_id) {
+            return response()->json([
+                'error' => 'ユーザーが異なるためフォロー許可できませんでした'
+            ]);
+        }
+
+        // デバッグ用
+        $follow_user_id = 21;
+
+        $UserFollow = UserFollow::where(
+            ['user_id', '=', $user_id],
+            ['follow_user_id', '=', $follow_user_id]
+        )->first();
+
+        // nullかフォロー申請中のステータスでない時は操作不可
+        if(is_null($UserFollow) || ($UserFollow->follow_status != UserFollow::FOLLOW_APPLY)) {
+            return response()->json([
+                'error' => '操作不可のステータスです。'
+            ]);
+        }
+
+        $this->userFollowRepository->permit($UserFollow);
+
+        return response()->json([
+            'user_id'        => $user_id,
+            'follow_user_id' => $follow_user_id,
+            'follow_status'    => UserFollow::FOLLOW_APPLY
         ]);
     }
 
@@ -53,7 +107,7 @@ class UserFollowController extends Controller
      * @param Request $request
      * @return void
      */
-    public function unfollow(Request $request)
+    public function delete(Request $request)
     {
         if(!$request->ajax()) { throw new BadRequestHttpException('不正なアクセスです。'); }
 
@@ -61,10 +115,19 @@ class UserFollowController extends Controller
         $user_id = $target_data['user_id'];
         $follow_user_id = $target_data['follow_user_id'];
 
-        // TODO:渡されたユーザーIDとログインユーザーが一致しているか判定。
+        // デバッグ用
+        $follow_user_id = 21;
 
-        $this->userFollowRepository->delete_user_follow($user_id, $follow_user_id);
+        // ユーザーが一致しなかったらログアウトさせる
+        if(Auth::user()->id != $user_id) {
+            return redirect('/logout');
+        }
 
-        return redirect('/user/mypage');
+        $this->userFollowRepository->delete($user_id, $follow_user_id);
+
+        return response()->json([
+            'user_id'        => $user_id,
+            'follow_user_id' => null,
+        ]);
     }
 }

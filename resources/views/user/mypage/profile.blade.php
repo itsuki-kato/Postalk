@@ -1,6 +1,6 @@
-@extends('layouts.layout')
+@extends('user.mypage.mypage_header')
 
-@section('content')
+@section('mypage_content')
     <h1>プロフィール</h1>
     <br>
 
@@ -44,5 +44,4 @@
     </table>
     <button>更新</button>
     {{ Form::close() }}
-
 @endsection

@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\UserFollow;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 use function PHPUnit\Framework\throwException;
 
@@ -34,34 +35,33 @@ class UserFollowRepository
     }
 
     /**
-     * ユーザーフォロー情報登録
+     * フォロー申請
      * 
      * @param string $user_id
      * @param string $follow_user_id
+     * @return void
     */
-    public function create_user_follow($user_id, $follow_user_id)
+    public function apply($user_id, $follow_user_id)
     {
         $UserFollow = UserFollow::where([
-            ['id', '=', $user_id],
+            ['user_id', '=', $user_id],
             ['follow_user_id', '=', $follow_user_id],
         ])->first();
 
         DB::beginTransaction();
-        try
-        {
-            if(is_null($UserFollow)) // フォローしていなかったら登録する
-            {
+        try {
+            // フォローしていなかったら登録する
+            if(is_null($UserFollow)) {
                 UserFollow::create([
-                    'id'             => $user_id,
-                    'follow_user_id' => $follow_user_id
+                    'user_id'        => $user_id,
+                    'follow_user_id' => $follow_user_id,
+                    'follow_status'    => UserFollow::FOLLOW_APPLY
                 ]);
     
                 DB::commit();
-                logs()->info('ユーザーフォローが完了しました。'.$follow_user_id);
+                logs()->info('フォロー申請が完了しました。'.$follow_user_id);
             }
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             throwException($e);
             logs()->info('例外が発生しました'.$e);
             DB::rollBack();
@@ -71,18 +71,48 @@ class UserFollowRepository
     }
 
     /**
-     * ユーザーフォロー情報削除
+     * フォロー許可
+     *
+     * @param UserFollow $UserFollow
+     * @return void
+     */
+    public function permit(UserFollow $UserFollow)
+    {
+        // 最新のステータスを取得して比較する
+        $isSameStatus = $this->compareCurrentStatus($UserFollow->id, $UserFollow->follow_status);
+
+        try {
+            if($isSameStatus) {
+                UserFollow::where('id', $UserFollow->id)
+                    ->update(['follow_status' => UserFollow::FOLLOW_PERMIT]);
+                DB::commit();
+                logs()->info('フォローを許可しました。'.'user_id:'.$UserFollow->user_id.',follow_user_id:'.$UserFollow->follow_user_id);
+            } else {
+                // TODO：フロント側への通知をどうするか検討する
+                logs()->info('ステータスが異なるため許可できませんでした。'.'user_id:'.$UserFollow->user_id.',follow_user_id:'.$UserFollow->follow_user_id);
+                return;
+            }
+        } catch (\Exception $e) {
+            throwException($e);
+            logs()->info('例外が発生しました'.$e);
+            DB::rollBack();
+        }
+    }
+
+    /**
+     * フォロー解除(削除)
      *
      * @param int $user_id
      * @param int $follow_user_id
      * @return void
     */
-    public function delete_user_follow($user_id, $follow_user_id)
+    public function delete($user_id, $follow_user_id)
     {
-        $UserFollow = UserFollow::where(
-            ['id', '=', $user_id],
-            ['follow_user_id', '=', $follow_user_id]
-        )->get();
+        $UserFollow = UserFollow::where([
+            ['user_id', $user_id],
+            ['follow_user_id', $follow_user_id]
+            ])->get();
+            Log::debug("ここまで");
 
         // フォローされていなかったらreturn
         if(!$UserFollow) {
@@ -131,5 +161,27 @@ class UserFollowRepository
         {
             return false;
         }
+    }
+
+    /**
+     * 最新のステータスを取得し、ステータスが一致していればtrueを返します。
+     * NOTE：フォロー解除対策。
+     *
+     * @param int $user_follow_id
+     * @param int $follow_status
+     * @return bool $isSameStatus
+     */
+    private function compareCurrentStatus($user_follow_id, $follow_status)
+    {
+        $CurrentUserFollow = UserFollow::find($user_follow_id);
+
+        if(is_null($CurrentUserFollow)) {
+            return false;
+        }
+        if($CurrentUserFollow->follow_status != $follow_status) {
+            return false;
+        }
+
+        return true;
     }
 }

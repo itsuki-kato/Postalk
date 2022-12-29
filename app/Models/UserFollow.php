@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserFollow extends Model
 {
+    // define follow_status
+    const FOLLOW_APPLY = 0; // フォロー申請中(相手からのフォロー許可待ち)
+    const FOLLOW_PERMIT = 1; // フォロー中(相手からのフォロー許可済み)
+
     use HasFactory;
 
     protected $table = 't_user_follow';
@@ -14,6 +18,7 @@ class UserFollow extends Model
     protected $fillable = [
         'user_id',
         'follow_user_id',
+        'follow_status'
     ];
 
     // 参照しないカラムを定義
