@@ -17,6 +17,19 @@ class UserFavoritePostRepository
     {}
 
     /**
+     * ユーザーのお気に入り投稿一覧を返します
+     *
+     * @param int $user_id
+     * @return UserFavoritePost[] $UserFavoritePosts
+     */
+    public function getList($user_id)
+    {
+        $UserFavoritePosts = UserFavoritePost::where('user_id', $user_id)->get();
+
+        return $UserFavoritePosts;
+    }
+
+    /**
      * 投稿をお気に入り登録します。
      * 
      * @param string $post_id

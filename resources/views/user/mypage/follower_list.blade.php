@@ -5,23 +5,21 @@
     <h1>フォロワー一覧</h1>
     <br>
 
-    @if(!empty(session('user_follower_list')))
+    @if(!empty($UserFollows))
         <table>
             <tr>
                 <th>ユーザーID</th>
                 <th>ユーザー名</th>
-                <th>プロフィール画像</th>
             </tr>
-            @foreach(session('user_follower_list') as $user_follower)
+            @foreach($UserFollows as $UserFollow)
                 <tr>
-                    <td><a href="{{$user_follower['user_id']}}">{{$user_follower['user_id']}}</a></td>
-                    <td>{{$user_follower['user_name']}}</td>
-                    <td>{{$user_follower['pf_img_url']}}</td>
+                    <td>{{ $UserFollow->user->user_id }}</td>
+                    <td>{{ $UserFollow->user->user_name }}</td>
                 </tr>
             @endforeach
         </table>
     @else
-        フォローされていません
+        フォロワーはいません
     @endif
 
 @endsection

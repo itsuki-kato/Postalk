@@ -80,10 +80,10 @@ class UserFollowController extends Controller
         // デバッグ用
         $follow_user_id = 21;
 
-        $UserFollow = UserFollow::where(
-            ['user_id', '=', $user_id],
-            ['follow_user_id', '=', $follow_user_id]
-        )->first();
+        $UserFollow = UserFollow::where([
+            ['user_id', $user_id],
+            ['follow_user_id', $follow_user_id]
+        ])->first();
 
         // nullかフォロー申請中のステータスでない時は操作不可
         if(is_null($UserFollow) || ($UserFollow->follow_status != UserFollow::FOLLOW_APPLY)) {

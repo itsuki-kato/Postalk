@@ -26,42 +26,42 @@
         <br>
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <a href="{{ route('mypage.profile') }}">
+                <a href="{{ route('mypage.profileIndex') }}">
                     <button class="nav-link active">
                         Profile
                     </button>
                 </a>
             </li>
             <li class="nav-item" role="presentation">
-                <a href="{{ route('mypage.profile') }}">
+                <a href="{{ route('mypage.userCategoryList') }}">
                     <button class="nav-link active">
                         MyCategory
                     </button>
                 </a>
             </li>
             <li class="nav-item" role="presentation">
-                <a href="{{ route('mypage.profile') }}">
+                <a href="{{ route('mypage.favoritePostList') }}">
                     <button class="nav-link active">
                         FavoritePost
                     </button>
                 </a>
             </li>
             <li class="nav-item" role="presentation">
-                <a href="{{ route('mypage.profile') }}">
+                <a href="{{ route('mypage.followList') }}">
                     <button class="nav-link active">
                         Follow
                     </button>
                 </a>
             </li>
             <li class="nav-item" role="presentation">
-                <a href="{{ route('mypage.profile') }}">
+                <a href="{{ route('mypage.followerList') }}">
                     <button class="nav-link active">
                         Follower
                     </button>
                 </a>
             </li>
             <li class="nav-item" role="presentation">
-                <a href="{{ route('mypage.profile') }}">
+                <a href="{{ route('mypage.dmList') }}">
                     <button class="nav-link active">
                         DM
                     </button>

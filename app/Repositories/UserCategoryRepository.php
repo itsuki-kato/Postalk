@@ -2,9 +2,10 @@
 
 namespace App\Repositories;
 
-use App\Models\Category;
 use App\Models\UserCategory;
 use Illuminate\Support\Facades\DB;
+
+use function PHPUnit\Framework\throwException;
 
 class UserCategoryRepository
 {
@@ -24,8 +25,7 @@ class UserCategoryRepository
             ->pluck('category_id');
 
         $user_category_list = [];
-        foreach($user_categoriy_ids as $user_category_id)
-        {
+        foreach($user_categoriy_ids as $user_category_id) {
             // カテゴリidからカテゴリ名を取得。
            $category_neme = DB::table('m_category')
                 ->where('id', $user_category_id)
@@ -34,6 +34,7 @@ class UserCategoryRepository
             // [cateogry_id => category_name]の形式に整形。
             $user_category_list[$user_category_id] = $category_neme;
         }
+
         return $user_category_list;
     }
 
@@ -64,26 +65,33 @@ class UserCategoryRepository
     }
 
     /**
-     * ユーザーカテゴリ情報登録
+     * マイカテゴリ更新
      *
-     * @param string $user_id
-     * @param int    $category_id
+     * @param int $user_id
+     * @param array $category_id_list
      * @return void
     */
-    public function create_user_category($user_id, $category_id)
+    public function updateUserCategory($user_id, $category_id_list)
     {
-        // TODO: try-catch,transactionの記述箇所検討
-        try {
-            DB::beginTransaction();
+        DB::beginTransaction();
+        try{
+            // 更新前にすべてのマイカテゴリを削除して初期化する
+            UserCategory::where('user_id', $user_id)->delete();
 
-            DB::table('t_user_category')->insert([
-                'user_id'   => $user_id,
-                'category_id' => $category_id,
-            ]);
+            foreach($category_id_list as $category_id) {
+                UserCategory::create([
+                    'user_id' => $user_id,
+                    'category_id' => $category_id
+                ]);
+
+                logs()->info('マイカテゴリの更新が完了しました。カテゴリID:'.$category_id);
+            }
 
             DB::commit();
-        } catch (Throwable $e) {
-            // TODO:エラーメッセージ出力
+        } catch(\Exception $e) {
+            throwException($e);
+            logs()->info('例外が発生しました。'.$e);
+
             DB::rollBack();
         }
     }

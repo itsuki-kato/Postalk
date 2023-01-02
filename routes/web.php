@@ -21,13 +21,20 @@ use App\Http\Controllers\Front\UserFollowController;
 Auth::routes();
 
 Route::group(['middleware' => 'auth'], function () {
-    Route::get('/',                [MypageController::class, 'profileIndex'])   ->name('mypage.profile'); // プロフィール表示
-    Route::post('/update_profile', [UserController::class, 'update_profile']); //プロフィール更新
+    // マイページ関連
+    Route::get('/',                      [MypageController::class, 'profileIndex'])        ->name('mypage.profileIndex');      // プロフィール表示
+    Route::post('/update_profile',       [MypageController::class, 'update_profile']);                                         //プロフィール更新
+    Route::get('/user_category_list',    [MypageController::class, 'userCategoryList'])    ->name('mypage.userCategoryList');  // ユーザーカテゴリ表示
+    Route::post('/update_user_category', [MypageController::class, 'updateUserCategory'])  ->name('mypage.updateUserCategory');  // ユーザーカテゴリ表示
+    Route::get('/favorite_post_list',    [MypageController::class, 'favoritePostList'])    ->name('mypage.favoritePostList');  // お気に入り投稿一覧
+    Route::get('/follow_list',           [MypageController::class, 'followList'])          ->name('mypage.followList');        // フォローユーザー一覧
+    Route::get('/followerList',          [MypageController::class, 'followerList'])        ->name('mypage.followerList');      // フォロワーユーザー一覧
+    Route::get('/dmList',                [MypageController::class, 'dmList'])              ->name('mypage.dmList');            // DM一覧
 
     // フォロー関連
-    Route::post('/apply_follow',  [UserFollowController::class, 'apply']) ->name('userFollow.apply');
-    Route::post('/permit_follow', [UserFollowController::class, 'permit'])->name('userFollow.permit');
-    Route::post('/delete_follow', [UserFollowController::class, 'delete'])->name('userFollow.delete');
+    Route::post('/apply_follow',  [UserFollowController::class, 'apply']) ->name('userFollow.apply');  // フォロー申請
+    Route::post('/permit_follow', [UserFollowController::class, 'permit'])->name('userFollow.permit'); // フォロー申請許可
+    Route::post('/delete_follow', [UserFollowController::class, 'delete'])->name('userFollow.delete'); // フォロー解除
 
     // 投稿関連
     Route::get('/post/list',           [PostController::class, 'list'])     ->name('post.list');      // 一覧表示

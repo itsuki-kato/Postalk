@@ -35,9 +35,7 @@ class PostController extends Controller
      */
     public function list()
     {
-        // NOTE：デバッグ用。
-        $user_id = 1;
-
+        $user_id = Auth::user()->id;
         $Posts = $this->postRepository->getListForTimeLine($user_id);
 
         return view('post.list', compact('user_id', 'Posts'));
@@ -50,13 +48,10 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-        // NOTE：デバッグ用。
-        $user_id = 1;
-
         $Post = new Post();
 
         // セレクトボックス用のユーザーに紐付いたカテゴリの配列を取得。
-        $user_category_list = $this->userCategoryRepository->getListForSelect($user_id);
+        $user_category_list = $this->userCategoryRepository->getListForSelect(Auth::user()->id);
 
         return view('post.index', compact('Post', 'user_category_list'));
     }
@@ -69,10 +64,9 @@ class PostController extends Controller
      */
     public function editIndex(Request $request, $post_id)
     {
-        $user_id = 1;
         $Post = Post::where('id', $post_id)->first();
 
-        $user_category_list = $this->userCategoryRepository->getListForSelect($user_id);
+        $user_category_list = $this->userCategoryRepository->getListForSelect(Auth::user()->id);
 
         return view('post.index', compact('Post', 'user_category_list'));
     }
@@ -84,8 +78,6 @@ class PostController extends Controller
      */
     public function store(Request $post_request)
     {
-        $user_id = 1;
-
         $mode = $post_request->get('mode');
         $post_img_file = $post_request->file('post_img_url');
         $user_category_id = $post_request->get('user_category');
@@ -96,7 +88,7 @@ class PostController extends Controller
         $upload_post_img_url = null;
         if($post_img_file) {
             // 保存先パス名
-            $target_path = 'post/'.$user_id;
+            $target_path = 'post/'.Auth::user()->id;
             // ファイルアップロード
             $upload_post_img_url = $this->fileService->uploadImg($post_img_file, $target_path);
         }
@@ -104,7 +96,7 @@ class PostController extends Controller
         if($mode === 'create') { // 新規作成
             // DB保存
             $this->postRepository->create(
-                $user_id,
+                Auth::user()->id,
                 $user_category_id,
                 $post_title,
                 $post_text,
@@ -140,8 +132,6 @@ class PostController extends Controller
     {
         if(!$request->ajax()) { throw new BadRequestException('不正なアクセスです。'); }
 
-        $user_id = 1;
-
         // ajaxで送信されたuser_idとpost_idを配列で取得する。
         $target_data = $request->target_data;
         $favorite_user_id = $target_data['favorite_user_id'];
@@ -156,14 +146,14 @@ class PostController extends Controller
             return response()->json(['error' => 'ユーザーが退会した可能性があります。']);
         }
 
-        $exists = $this->userFavoritePostRepository->exists($user_id, $favorite_user_id, $post_id);
+        $exists = $this->userFavoritePostRepository->exists(Auth::user()->id, $favorite_user_id, $post_id);
 
         // お気に入り登録されていなかったら登録処理 
         if($exists == false) {
-            $this->userFavoritePostRepository->favorite($user_id, $favorite_user_id, $post_id);
+            $this->userFavoritePostRepository->favorite(Auth::user()->id, $favorite_user_id, $post_id);
         } else {
             // お気に入り登録されていたら削除処理
-            $this->userFavoritePostRepository->removeFavorite($user_id, $favorite_user_id, $post_id);
+            $this->userFavoritePostRepository->removeFavorite(Auth::user()->id, $favorite_user_id, $post_id);
         }
 
         // front側でお気に入りボタンの色を変更する処理を追加する。

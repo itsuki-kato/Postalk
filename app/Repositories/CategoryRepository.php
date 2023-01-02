@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Catgeory;
+use App\Models\Category;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -14,7 +14,7 @@ class CategoryRepository
     /**
      * カテゴリ情報一覧取得
      *
-     * @return Catgeory $category_list
+     * @return Category $category_list
     */
     public function get_category_list()
     {
@@ -46,5 +46,17 @@ class CategoryRepository
             // TODO:エラーメッセージ出力
             DB::rollBack();
         }
+    }
+
+    /**
+     * マイページでのマイカテゴリ編集用にマイカテゴリ以外のカテゴリを返します。
+     * @param array[] $user_category_id_list
+     * @return Category[] $Categories
+     */
+    public function getListForMypage($user_category_id_list)
+    {
+        $Categories = Category::whereNotIn('id', $user_category_id_list)->get();
+
+        return $Categories;
     }
 }

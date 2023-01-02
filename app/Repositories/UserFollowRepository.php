@@ -17,7 +17,10 @@ class UserFollowRepository
     */
     public function get_user_follow_list($user_id)
     {
-        $user_follow_list = DB::table('t_user_follow')->where('user_id', $user_id)->get();
+        $user_follow_list = UserFollow::where([
+            ['user_id', $user_id],
+            ['follow_status', UserFollow::FOLLOW_PERMIT]
+        ])->get();
 
         return $user_follow_list;
     }
@@ -29,7 +32,11 @@ class UserFollowRepository
     */
     public function get_user_follower_list($user_id)
     {
-        $user_follower_list = DB::table('t_user_follow')->where('follow_user_id', $user_id)->get();
+        // follow_user_idが自身のレコードがフォロワー一覧となる
+        $user_follower_list = UserFollow::where([
+            ['follow_user_id', $user_id],
+            ['follow_status', UserFollow::FOLLOW_PERMIT]
+        ])->get();
 
         return $user_follower_list;
     }
@@ -111,8 +118,7 @@ class UserFollowRepository
         $UserFollow = UserFollow::where([
             ['user_id', $user_id],
             ['follow_user_id', $follow_user_id]
-            ])->get();
-            Log::debug("ここまで");
+        ])->first();
 
         // フォローされていなかったらreturn
         if(!$UserFollow) {

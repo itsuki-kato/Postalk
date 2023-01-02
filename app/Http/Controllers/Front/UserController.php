@@ -23,56 +23,6 @@ class UserController extends Controller
     }
 
     /**
-     * プロフィール更新
-     *
-     * @param Request $request
-     * @return void
-     */
-    public function update_profile(Request $request)
-    {
-        $user_id    = Auth::user()->user_id;
-        $user_name  = null;
-        $email      = null;
-        $address    = null;
-        $pf_img_url = $request->old_pf_img_url;
-        $bg_img_url = $request->old_bg_img_url;
-        $intro = null;
-
-        if (!empty($request->user_name)) {
-            $user_name = $request->user_name;
-        }
-        if (!empty($request->email)) {
-            $email = $request->email;
-        }
-        if (!empty($request->address)) {
-            $address = $request->address;
-        }
-        if (!empty($request->pf_img)) {
-            $pf_img_url = upload_file($request->file('pf_img'), Consts::DIR_PF_IMG, Consts::DISK_DEFAULT, $request->old_pf_img_url);
-        }
-        if (!empty($request->bg_img)) {
-            $bg_img_url = upload_file($request->file('bg_img'), Consts::DIR_PF_IMG, Consts::DISK_DEFAULT, $request->old_bg_img_url);
-        }
-        if (!empty($request->intro)) {
-            $intro = $request->intro;
-        }
-
-        $this->userRepository->update_user(
-            $user_id,
-            $user_name,
-            $email,
-            $address,
-            $pf_img_url,
-            $bg_img_url,
-            $intro
-        );
-
-        //$this->init_user_session($user_id);
-
-        return redirect('/');
-    }
-
-    /**
      * ユーザーセッション情報初期化
      *
      * @param string $user_id
