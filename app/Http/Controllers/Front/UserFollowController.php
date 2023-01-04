@@ -3,13 +3,15 @@
 namespace App\Http\Controllers\Front;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\UserFollow;
+use App\Services\NotifyService;
+use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
 use App\Repositories\UserFollowRepository;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserFollowController extends Controller
 {
@@ -17,10 +19,12 @@ class UserFollowController extends Controller
      * UserFollowController constructor
      * @param UserRepository       $userRepository
      * @param UserFollowRepository $userFollowRepository
+     * @param NotifyService $notifyService
      */
     public function __construct(
         private UserRepository $userRepository,
         private UserFollowRepository $userFollowRepository,
+        private NotifyService $notifyService,
     )
     {}
 
@@ -46,7 +50,19 @@ class UserFollowController extends Controller
             return redirect('/logout');
         }
 
-        $this->userFollowRepository->apply($user_id, $follow_user_id);
+        // 複数テーブルに登録のため、外側でTransaction開始
+        DB::beginTransaction();
+        try {
+            // フォロー申請
+            $UserFollow = $this->userFollowRepository->apply($user_id, $follow_user_id);
+            // フォロー申請通知作成
+            $this->notifyService->dispatch($UserFollow);
+        } catch(\Exception $e) {
+            throwException($e);
+            logs()->info('例外が発生しました'.$e);
+            DB::rollBack();
+        }
+
 
         return response()->json([
             'user_id'        => $user_id,
@@ -92,7 +108,19 @@ class UserFollowController extends Controller
             ]);
         }
 
-        $this->userFollowRepository->permit($UserFollow);
+        // 複数テーブルに登録のため、外側でTransaction開始
+        DB::beginTransaction();
+        try {
+            // フォロー許可
+            $this->userFollowRepository->permit($UserFollow);
+            // フォロー申請通知作成
+            $this->notifyService->dispatch($UserFollow);
+        } catch(\Exception $e) {
+            throwException($e);
+            logs()->info('例外が発生しました'.$e);
+            DB::rollBack();
+        }
+
 
         return response()->json([
             'user_id'        => $user_id,

@@ -9,6 +9,8 @@ use App\Models\UserCategory;
 use App\Models\Post;
 use App\Models\UserFavoritePost;
 use App\Models\UserFollow;
+use App\Models\User;
+use App\Models\UserNotify;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,10 +21,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        User::factory(20)->create();
         Category::factory(20)->create();
-        UserCategory::factory(5)->create();
-        Post::factory(20)->create();
+        UserCategory::factory(100)->create();
+        Post::factory(100)->create();
         UserFavoritePost::factory(100)->create();
-        UserFollow::factory(100)->create();
+        UserFollow::factory(200)->create();
+        // UserNotify::factory(20)->create();
     }
 }

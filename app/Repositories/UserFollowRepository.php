@@ -5,7 +5,6 @@ namespace App\Repositories;
 use App\Models\UserFollow;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-
 use function PHPUnit\Framework\throwException;
 
 class UserFollowRepository
@@ -46,35 +45,20 @@ class UserFollowRepository
      * 
      * @param string $user_id
      * @param string $follow_user_id
-     * @return void
+     * @return UserFollow $UserFollow
     */
     public function apply($user_id, $follow_user_id)
     {
-        $UserFollow = UserFollow::where([
-            ['user_id', '=', $user_id],
-            ['follow_user_id', '=', $follow_user_id],
-        ])->first();
+        $UserFollow = UserFollow::create([
+            'user_id'        => $user_id,
+            'follow_user_id' => $follow_user_id,
+            'follow_status'    => UserFollow::FOLLOW_APPLY
+        ]);
 
-        DB::beginTransaction();
-        try {
-            // フォローしていなかったら登録する
-            if(is_null($UserFollow)) {
-                UserFollow::create([
-                    'user_id'        => $user_id,
-                    'follow_user_id' => $follow_user_id,
-                    'follow_status'    => UserFollow::FOLLOW_APPLY
-                ]);
-    
-                DB::commit();
-                logs()->info('フォロー申請が完了しました。'.$follow_user_id);
-            }
-        } catch (\Exception $e) {
-            throwException($e);
-            logs()->info('例外が発生しました'.$e);
-            DB::rollBack();
-        }
+        logs()->info('フォロー申請が完了しました。'.$follow_user_id);
 
-        return;
+        return $UserFollow;
+
     }
 
     /**

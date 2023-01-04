@@ -22,9 +22,6 @@ $(function()
             case 'follow-apply-btn':
                 url = '/apply_follow';
 
-                // フォロー申請が終わるまで解除ボタンをdisableにする
-                $('#follow-delete-btn').prop('disabled', true);
-
                 break;
 
             case 'follow-permit-btn':
@@ -65,7 +62,6 @@ $(function()
 
     function changeBtn(data)
     {
-        $('#follow-delete-btn').prop('disabled', false);
         return;
     }
 });

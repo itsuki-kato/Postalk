@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\User;
+use App\Models\Category;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Post>
@@ -17,7 +19,7 @@ class PostFactory extends Factory
     public function definition()
     {
         return [
-            'user_id' => rand(1, 30),
+            'user_id' => rand(1, 20),
             'category_id' => rand(1, 20),
             'post_title' => fake()->sentence(1, 3),
             'post_text' => fake()->realText(200, 2),

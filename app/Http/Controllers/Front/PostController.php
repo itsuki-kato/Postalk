@@ -12,7 +12,9 @@ use App\Repositories\PostRepository;
 use App\Repositories\UserCategoryRepository;
 use App\Repositories\UserFavoritePostRepository;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Services\FileService;
+use App\Services\NotifyService;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use App\Http\Requests\PostRequest;
 
@@ -26,7 +28,8 @@ class PostController extends Controller
         private PostRepository $postRepository,
         private UserCategoryRepository $userCategoryRepository,
         private UserFavoritePostRepository $userFavoritePostRepository,
-        private FileService $fileService
+        private FileService $fileService,
+        private NotifyService $notifyService
     )
     {}
 
@@ -148,9 +151,22 @@ class PostController extends Controller
 
         $exists = $this->userFavoritePostRepository->exists(Auth::user()->id, $favorite_user_id, $post_id);
 
-        // お気に入り登録されていなかったら登録処理 
+        // お気に入り登録されていなかったら登録処理
         if($exists == false) {
-            $this->userFavoritePostRepository->favorite(Auth::user()->id, $favorite_user_id, $post_id);
+            // 複数テーブルに登録のため、外側でTransaction開始
+            DB::beginTransaction();
+            try {
+                // お気に入り登録
+                $UserFavoritePost = $this->userFavoritePostRepository->favorite(Auth::user()->id, $favorite_user_id, $post_id);
+                // お気に入り登録通知作成
+                $this->notifyService->dispatch($UserFavoritePost);
+
+                DB::commit();
+            } catch(\Exception $e) {
+                throw new Exception('例外が発生しました。'.$e, 1);
+                logs()->info('例外が発生しました。'.$e);
+                DB::rollBack();
+            }
         } else {
             // お気に入り登録されていたら削除処理
             $this->userFavoritePostRepository->removeFavorite(Auth::user()->id, $favorite_user_id, $post_id);

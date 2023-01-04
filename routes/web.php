@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\Front\MypageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Front\UserController;
 use App\Http\Controllers\Front\PostController;
 use App\Http\Controllers\Front\UserFollowController;
+use App\Http\Controllers\Front\MypageController;
+use App\Http\Controllers\Front\UserNotifyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,5 +42,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/post',                [PostController::class, 'index'])    ->name('post.index');     // 入力画面
     Route::get('/post/{post_id}/edit', [PostController::class, 'editIndex'])->name('post.editIndex'); // 編集画面
     Route::post('/post/store_post',    [PostController::class, 'store'])    ->name('post.store');     // 新規作成or編集処理
-    Route::post('/post/favorite',      [PostController::class, 'favorite']) ->name('post.favorite');  // 投稿お気に入り登録                                        // フォロー解除
+    Route::post('/post/favorite',      [PostController::class, 'favorite']) ->name('post.favorite');  // 投稿お気に入り登録
+
+    // 通知画面
+    Route::get('/notify_unread_list', [UserNotifyController::class, 'unReadList'])->name('notify.unreadList'); // 通知一覧表示
+    Route::get('/notify_read_list', [UserNotifyController::class, 'readList'])->name('notify.readList'); // 通知一覧表示
+    Route::post('/notify_read', [UserNotifyController::class, 'read'])->name('notify.read'); // 既読処理
 });

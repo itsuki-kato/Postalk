@@ -35,42 +35,20 @@ class UserFavoritePostRepository
      * @param string $post_id
      * @param string $user_id
      * @param string $favorite_user_id
-     * @return void
+     * @return UserFavoritePost $UserFavoritePost
      */
     public function favorite($user_id, $favorite_user_id, $post_id)
     {
-        $UserFavoritePost = UserFavoritePost::where([
-            ['post_id', '=', $post_id],
-            ['user_id', '=', $user_id],
-            ['favorite_user_id', '=', $favorite_user_id]
-        ])->first();
+        $UserFavoritePost = UserFavoritePost::create([
+            'post_id'               => $post_id,
+            'user_id'          => $user_id,
+            'favorite_user_id' => $favorite_user_id,
+            'favorite_type'    => UserFavoritePost::TYPE_LIKE
+        ]);
 
-        DB::beginTransaction();
-        try
-        {
-            if(is_null($UserFavoritePost)) // お気に入り登録されていなかったら登録
-            {
-                UserFavoritePost::create([
-                    'post_id'               => $post_id,
-                    'user_id'          => $user_id,
-                    'favorite_user_id' => $favorite_user_id,
-                    'favorite_type'    => UserFavoritePost::TYPE_LIKE
-                ]);
+        logs()->info('お気に入り登録が完了しました。'.$post_id, ['Front' => 'post.favorite']);
 
-                logs()->info('お気に入り登録が完了しました。'.$post_id, ['Front' => 'post.favorite']);
-
-                DB::commit();
-            }
-        }
-        catch (\Exception $e)
-        {
-            throw new Exception('例外が発生しました。'.$e, 1);
-            
-            logs()->info('例外が発生しました。'.$e);
-            DB::rollBack();
-        }
-
-        return;
+        return $UserFavoritePost;
     }
 
     /**
@@ -83,10 +61,8 @@ class UserFavoritePostRepository
      */
     public function removeFavorite($user_id, $favorite_user_id, $post_id)
     {
-        
         DB::beginTransaction();
-        try
-        {
+        try {
             // NOTE：primaryKey複数＋中間テーブルだとEloquentのdelete()が使用できない
             DB::table('t_user_favorite_post')->where([
                 ['post_id', '=', $post_id],
@@ -97,9 +73,7 @@ class UserFavoritePostRepository
             logs()->info('お気に入り削除が完了しました。'.$post_id, ['Front' => 'post.favorite']);
 
             DB::commit();
-        }
-        catch (\Exception $e)
-        {
+        } catch(\Exception $e) {
             throw new Exception('例外が発生しました。'.$e, 1);
             
             logs()->info('例外が発生しました。'.$e);
@@ -125,12 +99,11 @@ class UserFavoritePostRepository
             ['post_id', '=', $post_id]
         ])->first();
 
-        if($UserFavoritePost) // お気に入り登録されていた場合
-        {
+        if($UserFavoritePost) {
+            // お気に入り登録されていた場合
             return true;
-        }
-        else // お気に入り登録されていなかった場合
-        {
+        } else {
+            // お気に入り登録されていなかった場合
             return false;
         }
     }

@@ -3,12 +3,14 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Category;
 use App\Models\User;
+use App\Models\UserFavoritePost;
+use App\Models\UserFollow;
+
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\UserCategory>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\UserNotify>
  */
-class UserCategoryFactory extends Factory
+class UserNotifyFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,8 +20,7 @@ class UserCategoryFactory extends Factory
     public function definition()
     {
         return [
-            'user_id' => rand(1, 20),
-            'category_id' => rand(1, 20)
+            
         ];
     }
 }

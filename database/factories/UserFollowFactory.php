@@ -18,8 +18,8 @@ class UserFollowFactory extends Factory
     public function definition()
     {
         return [
-            'user_id' => User::factory(),
-            'follow_user_id' => User::factory(),
+            'user_id' => rand(1, 20),
+            'follow_user_id' => rand(1, 20),
             'follow_status' => rand(0, 1)
         ];
     }
