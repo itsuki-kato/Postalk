@@ -7,7 +7,7 @@
                     <div class="col-sm-4 offset-md-1 py-4">
                         <h4 class="text-white">とりあえず各機能のリンクを表示</h4>
                         <ul class="list-unstyled">
-                            <li><a href="{{ url('/create') }}" class="text-white">ユーザー登録</a></li>
+                            <li><a href="{{ url('/register') }}" class="text-white">ユーザー登録</a></li>
                             <li><a href="{{ url('/login') }}" class="text-white">ログイン</a></li>
                             <li>
                                 <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="text-white">
