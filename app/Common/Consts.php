@@ -24,6 +24,12 @@ class Consts
     self::SEX_WOMAN   => '女性'
   ];
 
+  // 検索タイプ
+  const SEARCH_TYPE_USER = 0; // タイプ：ユーザー検索
+  const SEARCH_TYPE_POST = 1; // タイプ：投稿検索
 
-
+  const SEARCH_TYPE_LIST = [
+    self::SEARCH_TYPE_USER => 'ユーザー検索',
+    self::SEARCH_TYPE_POST => '投稿検索',
+  ];
 }

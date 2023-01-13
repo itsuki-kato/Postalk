@@ -6,6 +6,7 @@ use App\Http\Controllers\Front\PostController;
 use App\Http\Controllers\Front\UserFollowController;
 use App\Http\Controllers\Front\MypageController;
 use App\Http\Controllers\Front\UserNotifyController;
+use App\Http\Controllers\Front\SearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,4 +49,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/notify_unread_list', [UserNotifyController::class, 'unReadList'])->name('notify.unreadList'); // 通知一覧表示
     Route::get('/notify_read_list', [UserNotifyController::class, 'readList'])->name('notify.readList'); // 通知一覧表示
     Route::post('/notify_read', [UserNotifyController::class, 'read'])->name('notify.read'); // 既読処理
+
+    // 検索関連
+    Route::get('/search', [SearchController::class, 'index'])->name('search.index'); // 検索画面
+
+    // 他ユーザー関連
+    Route::get('/other_user', [UserController::class, 'index'])->name('user.index'); // 他ユーザー画面
 });

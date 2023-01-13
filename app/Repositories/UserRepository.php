@@ -28,6 +28,37 @@ class UserRepository
     }
 
     /**
+     * ユーザー情報一覧取得(検索用)
+     *
+     * @return User $user_list
+    */
+    public function get_user_list_for_search($user_id = null, $user_name = null, $sex = null, $age = null, $address = null)
+    {
+		// todo: カテゴリでフィルタリング
+
+        $query = DB::table('t_user');
+        if (!empty($user_id)) {
+            $query = $query->where('user_id', 'LIKE', '%'.$user_id.'%');
+        }
+        if (!empty($user_name)) {
+            $query = $query->where('user_name', '%'.$user_name.'%');
+        }
+        if (!empty($sex)) {
+            $query = $query->where('sex', $sex);
+        }
+        /*if (!empty($user_id)) {
+            $query = $query->where('age', $age);
+        }*/
+        if (!empty($address)) {
+            $query = $query->where('address', $address);
+        }
+
+        $user_list = $query->get();
+
+        return $user_list;
+    }
+
+    /**
      * ユーザー情報取得
      *
      * @param string $user_id
@@ -54,7 +85,7 @@ class UserRepository
                 'address',
                 'pf_img_url',
                 'bg_img_url',
-                'intro_text'
+                'intro'
             )
             ->where('user_id', $user_id)
             ->first();

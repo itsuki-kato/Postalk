@@ -21,6 +21,8 @@
                             <li><a href="{{ route('post.index') }}" class="text-white">投稿作成</a></li>
                             <li><a href="{{ route('post.editIndex', ['post_id' => 1]) }}" class="text-white">投稿編集</a></li>
                             <li><a href="{{ route('notify.unreadList') }}" class="text-white">通知画面</a></li>
+                            <li><a href="{{ route('search.index') }}" class="text-white">検索</a></li>
+                            <li><a href="{{ route('mypage.profileIndex') }}" class="text-white">マイページ</a></li>
                         </ul>
                     </div>
                 </div>
@@ -34,6 +36,7 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
             </div>
         </div>
     </header>

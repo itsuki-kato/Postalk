@@ -44,4 +44,20 @@ class UserController extends Controller
             'intro_text' => $user->intro_text
         ]);
     }
+
+    /**
+     * 入力画面を表示します。
+     *
+     * @param Request $request
+     */
+    public function index(Request $request)
+    {
+        if (empty($request->user_id)) {
+            redirect('/');
+        }
+
+        $User = $this->userRepository->get_user($request->user_id);
+        return view('user.index', compact('User'));
+    }
+
 }
