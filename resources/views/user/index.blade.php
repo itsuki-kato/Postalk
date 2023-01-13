@@ -15,11 +15,11 @@
             </tr>
             <tr>
                 <th>ユーザー名</th>
-                <td>{{$User->user_id}}</td>
+                <td>{{$User->user_name}}</td>
             </tr>
             <tr>
                 <th>ユーザーID</th>
-                <td>{{$User->user_name}}</td>
+                <td>{{$User->user_id}}</td>
             </tr>
             <tr>
                 <th>自己紹介文</th>
@@ -31,7 +31,17 @@
                     <button type="button" id="follow-apply-btn" data-user-id="{{ Auth::user()->id }}" data-follow-user-id="" class="btn btn-outline-primary">フォロー申請</button>
                     <button type="button" id="follow-permit-btn" data-user-id="{{ Auth::user()->id }}" data-follow-user-id="" class="btn btn-outline-primary">フォロー許可</button>
                     <button type="button" id="follow-delete-btn" data-user-id="{{ Auth::user()->id }}" data-follow-user-id="" class="btn btn-outline-primary">フォロー解除</button>
+                    ※まだ反応しない（エラー出るんゴ）
                 </td>
+            </tr>
+            <tr>
+                {{ Form::open(['url' => '/apply_dm']) }}
+                    <th>DM申請関連</th>
+                    <td>
+                        <input type="hidden" name="apply_user_id" value="{{$User->user_id}}">
+                        <button>DM申請</button>
+                    </td>
+                {{ Form::close() }}
             </tr>
         </table>
     @else

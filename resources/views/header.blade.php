@@ -23,6 +23,7 @@
                             <li><a href="{{ route('notify.unreadList') }}" class="text-white">通知画面</a></li>
                             <li><a href="{{ route('search.index') }}" class="text-white">検索</a></li>
                             <li><a href="{{ route('mypage.profileIndex') }}" class="text-white">マイページ</a></li>
+                            <li><a href="{{ route('user.dmApplyList') }}" class="text-white">DM申請一覧</a></li>
                         </ul>
                     </div>
                 </div>

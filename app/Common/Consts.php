@@ -32,4 +32,9 @@ class Consts
     self::SEARCH_TYPE_USER => 'ユーザー検索',
     self::SEARCH_TYPE_POST => '投稿検索',
   ];
+
+  // DM申請状況
+  const DM_APPLY_STATUS_UNAPPLIED = 0; // 未申請
+  const DM_APPLY_STATUS_APPLYING  = 1; // 申請中
+  const DM_APPLY_STATUS_APPROVAL  = 2; // 承認済み
 }

@@ -7,7 +7,7 @@ use App\Http\Controllers\Front\UserFollowController;
 use App\Http\Controllers\Front\MypageController;
 use App\Http\Controllers\Front\UserNotifyController;
 use App\Http\Controllers\Front\SearchController;
-
+use App\Http\Controllers\Front\UserDmApplyController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -55,4 +55,15 @@ Route::group(['middleware' => 'auth'], function () {
 
     // 他ユーザー関連
     Route::get('/other_user', [UserController::class, 'index'])->name('user.index'); // 他ユーザー画面
+
+    // DM送受信関連
+    Route::get('/dm_list',     [UserDmHistoryController::class, 'show_dm_list'])  ->name('user.dm_list');    // DM一覧画面
+    Route::get('/dm_detail',   [UserDmHistoryController::class, 'show_dm_detail'])->name('user.dm_detail');  // DM詳細画面
+    Route::post('/send_dm',    [UserDmHistoryController::class, 'send_dm'])       ->name('user.dm_send');    // DM送信
+
+    // DM申請関連
+    Route::get('/dm_apply_list', [UserDmApplyController::class, 'show_dm_apply_list'])->name('user.dmApplyList'); // DM一覧画面
+    Route::post('/apply_dm',     [UserDmApplyController::class,   'apply_dm'])          ->name('user.dm_apply');      // DM申請
+    Route::post('/approve_dm',   [UserDmApplyController::class,   'approve_dm'])        ->name('user.dm_approve');    // DM承認
+    Route::post('/deny_dm',      [UserDmApplyController::class,   'deny_dm'])           ->name('user.dm_deny');       // DM否認
 });
