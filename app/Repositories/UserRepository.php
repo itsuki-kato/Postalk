@@ -41,7 +41,7 @@ class UserRepository
             $query = $query->where('user_id', 'LIKE', '%'.$user_id.'%');
         }
         if (!empty($user_name)) {
-            $query = $query->where('user_name', '%'.$user_name.'%');
+            $query = $query->where('user_name', 'LIKE', '%'.$user_name.'%');
         }
         if (!empty($sex)) {
             $query = $query->where('sex', $sex);
@@ -77,6 +77,7 @@ class UserRepository
         } else {
             $user = DB::table('t_user')
             ->select(
+                'id',
                 'user_id',
                 'user_name',
                 'email',

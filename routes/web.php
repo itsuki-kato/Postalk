@@ -51,19 +51,19 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/notify_read',       [UserNotifyController::class, 'read'])      ->name('notify.read');       // 既読処理
 
     // 検索関連
-    Route::get('/search', [SearchController::class, 'index'])->name('search.index'); // 検索画面
+    Route::get('/search', [SearchController::class, 'show_search'])->name('search.index'); // 検索画面
 
     // 他ユーザー関連
-    Route::get('/other_user', [UserController::class, 'index'])->name('user.index'); // 他ユーザー画面
+    Route::get('/other_user', [UserController::class, 'show_user'])->name('user.index'); // 他ユーザー画面
 
     // DM送受信関連
-    Route::get('/dm_list',     [UserDmHistoryController::class, 'show_dm_list'])  ->name('user.dm_list');   // DM一覧画面
-    Route::get('/dm_detail',   [UserDmHistoryController::class, 'show_dm_detail'])->name('user.dm_detail'); // DM詳細画面
-    Route::post('/send_dm',    [UserDmHistoryController::class, 'send_dm'])       ->name('user.dm_send');   // DM送信
+    Route::get('/dm_list',     [UserDmHistoryController::class, 'show_dm_list'])  ->name('user.dmList');   // DM一覧画面
+    Route::get('/dm_detail',   [UserDmHistoryController::class, 'show_dm_detail'])->name('user.dmDetail'); // DM詳細画面
+    Route::post('/send_dm',    [UserDmHistoryController::class, 'send_dm'])       ->name('user.dmSend');   // DM送信
 
     // DM申請関連
     Route::get('/dm_apply_list', [UserDmApplyController::class, 'show_dm_apply_list'])->name('user.dmApplyList'); // DM一覧画面
-    Route::post('/apply_dm',     [UserDmApplyController::class, 'apply_dm'])          ->name('user.dm_apply');    // DM申請
-    Route::post('/approve_dm',   [UserDmApplyController::class, 'approve_dm'])        ->name('user.dm_approve');  // DM承認
-    Route::post('/deny_dm',      [UserDmApplyController::class, 'deny_dm'])           ->name('user.dm_deny');     // DM否認
+    Route::post('/apply_dm',     [UserDmApplyController::class, 'apply_dm'])          ->name('user.dmApply');     // DM申請
+    Route::post('/approve_dm',   [UserDmApplyController::class, 'approve_dm'])        ->name('user.dmApprove');   // DM承認
+    Route::post('/deny_dm',      [UserDmApplyController::class, 'deny_dm'])           ->name('user.dmDeny');      // DM否認
 });

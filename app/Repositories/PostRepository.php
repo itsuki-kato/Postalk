@@ -43,24 +43,22 @@ class PostRepository
     }
 
     /**
-     * タイムライン表示用にユーザーカテゴリに紐付いた投稿のCollectionを取得します。
-     *
-     * @param string $user_id
-     * @return Post[] $Posts
+     * 投稿一覧取得(検索用)
      */
     public function getListForSearch($user_id, $post_title = null, $post_text = null)
     {
         // todo: ユーザーカテゴリでフィルタリング
 
         $query = DB::table('t_user_post');
+
         if (!empty($post_title)) {
             $query = $query->where('post_title', 'LIKE', '%'.$post_title.'%');
         }
         if (!empty($post_text)) {
             $query = $query->where('post_text', 'LIKE', '%'.$post_text.'%');
         }
-        $Posts = $query->orderBy('created_at', 'desc')->get();
 
+        $Posts = $query->orderBy('created_at', 'desc')->get();
 
         return $Posts;
     }

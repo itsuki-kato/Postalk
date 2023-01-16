@@ -23,17 +23,15 @@ class SearchController extends Controller
     }
 
     /**
-     * 入力画面を表示します。
-     *
-     * @param Request $request
+     * 検索画面表示
      */
-    public function index(Request $request)
+    public function show_search(Request $request)
     {
-        if (is_null($request->type)) {
+        if (is_null($request->search_type)) {
             return view('search.index');
         }
 
-        $search_type = $request->type;
+        $search_type = $request->search_type;
         $Users = null;
         $Posts = null;
 
@@ -62,6 +60,9 @@ class SearchController extends Controller
         return view('search.result', compact('Users', 'Posts'));
     }
 
+    /**
+     * ユーザー検索
+     */
     private function search_user($user_id = null, $user_name = null, $sex = null, $age = null, $address = null)
     {
         if (
@@ -73,16 +74,21 @@ class SearchController extends Controller
         ) {
             return;
         }
+
         $Users = $this->userRepository->get_user_list_for_search($user_id, $user_name, $sex, $age, $address);
 
         return $Users;
     }
 
+    /**
+     * 投稿検索
+     */
     private function search_post($user_id, $post_title = null, $post_text = null)
     {
         if (empty($post_title) && empty($post_text)) {
             return;
         }
+
         $Posts = $this->postRepository->getListForSearch($user_id, $post_title, $post_text);
 
         return $Posts;

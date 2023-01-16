@@ -50,7 +50,7 @@ class UserController extends Controller
      *
      * @param Request $request
      */
-    public function index(Request $request)
+    public function show_user(Request $request)
     {
         if (empty($request->user_id)) {
             redirect('/');

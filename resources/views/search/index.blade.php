@@ -6,7 +6,7 @@
 {{ Form::open(['method'=>'get', 'url' => '/search']) }}
     <p>↓のラジオボタン選択でフォーム切り替えたい（ラジオボタンじゃなくてもいい）</p>
     @foreach(Consts::SEARCH_TYPE_LIST as $key => $val)
-        <input type="radio" name="type" value={{$key}} {{$key == 0 ? 'checked' : ''}}>{{$val}}
+        <input type="radio" name="search_type" value={{$key}} {{$key == 0 ? 'checked' : ''}}>{{$val}}
     @endforeach
     <br>
     <br>
