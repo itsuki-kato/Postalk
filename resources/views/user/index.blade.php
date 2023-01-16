@@ -38,7 +38,7 @@
                 {{ Form::open(['url' => '/apply_dm']) }}
                     <th>DM申請関連</th>
                     <td>
-                        <input type="hidden" name="apply_user_id" value="{{$User->user_id}}">
+                        <input type="hidden" name="apply_user_id" value="{{$User->id}}">
                         <button>DM申請</button>
                     </td>
                 {{ Form::close() }}

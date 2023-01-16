@@ -25,12 +25,33 @@ class UserDmApplyController extends Controller
      */
     public function show_dm_apply_list(Request $request)
     {
-        $User = Auth::user();
-        $user_id = $User->user_id;
+        $UserDmApplies = $this->userDmApplyRepository->get_user_dm_apply_list(Auth::user()->id);
 
-        $UserDmApplies = $this->userDmApplyRepository->get_user_dm_apply_list($user_id);
+        // Viewで扱いやすいように分割
+        $UserDmAppliesToMe     = array();
+        $UserDmAppliesToOther  = array();
+        $UserDmAppliesComplete = array();
 
-        return view('user.dm_apply_list', compact('UserDmApplies'));
+        foreach ($UserDmApplies as $UserDmApply) {
+
+            if ($UserDmApply->apply_status === Consts::DM_APPLY_STATUS_APPROVAL) {
+
+                $UserDmAppliesComplete[] = $UserDmApply;
+
+            } else if ($UserDmApply->apply_user_id == Auth::user()->id) {
+
+                $UserDmAppliesToMe[] = $UserDmApply;
+
+            } else if ($UserDmApply->user_id == Auth::user()->id) {
+
+                $UserDmAppliesToOther[] = $UserDmApply;
+
+            }
+        }
+
+        //var_dump($UserDmAppliesComplete);
+
+        return view('user.dm_apply_list', compact('UserDmAppliesToMe', 'UserDmAppliesToOther', 'UserDmAppliesComplete'));
     }
 
     /**
@@ -38,13 +59,9 @@ class UserDmApplyController extends Controller
      */
     public function apply_dm(Request $request)
     {
-        $User = Auth::user();
+        $this->userDmApplyRepository->create_user_dm_apply(Auth::user()->id, $request->apply_user_id, Consts::DM_APPLY_STATUS_APPLYING);
 
-        $user_id       = $User->user_id;          //申請ユーザー
-        $apply_user_id = $request->apply_user_id; //受理ユーザー
-
-        $this->userDmApplyRepository->create_user_dm_apply($user_id, $apply_user_id, Consts::DM_APPLY_STATUS_APPLYING);
-        return redirect('/dm_apply_list'); //とりあえず
+        return redirect('/dm_apply_list');
     }
 
     /**
@@ -52,13 +69,9 @@ class UserDmApplyController extends Controller
      */
     public function approve_dm(Request $request)
     {
-        $User = Auth::user();
+        $this->userDmApplyRepository->update_user_dm_apply($request->apply_user_id, Auth::user()->id, Consts::DM_APPLY_STATUS_APPROVAL);
 
-        $user_id       = $request->apply_user_id; // 申請ユーザー
-        $apply_user_id = $User->user_id;          // 承認ユーザー
-
-        $this->userDmApplyRepository->update_user_dm_apply($user_id, $apply_user_id, Consts::DM_APPLY_STATUS_APPROVAL);
-        return redirect('/dm_apply_list'); //とりあえず
+        return redirect('/dm_apply_list');
     }
 
     /**
@@ -66,12 +79,8 @@ class UserDmApplyController extends Controller
      */
     public function deny_dm(Request $request)
     {
-        $User = Auth::user();
+        $this->userDmApplyRepository->update_user_dm_apply(Auth::user()->id, $request->apply_user_id, Consts::DM_APPLY_STATUS_DENY);
 
-        $user_id       = $request->apply_user_id; // 申請ユーザー
-        $apply_user_id = $User->user_id;          // 否認ユーザー
-
-        $this->userDmApplyRepository->update_user_dm_apply($user_id, $apply_user_id, Consts::DM_APPLY_STATUS_APPLYING);
-        return redirect('/dm_apply_list'); //とりあえず
+        return redirect('/dm_apply_list');
     }
 }

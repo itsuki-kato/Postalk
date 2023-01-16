@@ -37,4 +37,5 @@ class Consts
   const DM_APPLY_STATUS_UNAPPLIED = 0; // 未申請
   const DM_APPLY_STATUS_APPLYING  = 1; // 申請中
   const DM_APPLY_STATUS_APPROVAL  = 2; // 承認済み
+  const DM_APPLY_STATUS_DENY      = 3; // 否認
 }
