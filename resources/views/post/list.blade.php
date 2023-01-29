@@ -28,11 +28,11 @@
                             @if($Post->isMyFavorite($user_id) == true)
                                 <i class="post_favorite_btn fa-solid fa-heart post_favorite_btn_added" 
                                     data-favorite-post-id="{{ $Post->id }}" 
-                                    data-favorite-user-id="{{ $Post->user_id }}"></i>
+                                    data-favorite-user-id="{{ Auth::user()->id }}"></i>
                             @else
                                 <i class="post_favorite_btn fa-solid fa-heart"
                                  data-favorite-post-id="{{ $Post->id }}" 
-                                 data-favorite-user-id="{{ $Post->user_id }}"></i>
+                                 data-favorite-user-id="{{ Auth::user()->id }}"></i>
                             @endif
                         </div>
                     </div>

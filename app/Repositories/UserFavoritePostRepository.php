@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\UserFavoritePost;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UserFavoritePostRepository
 {
@@ -71,11 +72,9 @@ class UserFavoritePostRepository
             ])->delete();
 
             logs()->info('お気に入り削除が完了しました。'.$post_id, ['Front' => 'post.favorite']);
-
             DB::commit();
         } catch(\Exception $e) {
-            throw new Exception('例外が発生しました。'.$e, 1);
-            
+            throw new \Exception('例外が発生しました。'.$e, 1);
             logs()->info('例外が発生しました。'.$e);
             DB::rollBack();
         }
@@ -93,11 +92,14 @@ class UserFavoritePostRepository
      */
     public function exists($user_id, $favorite_user_id, $post_id)
     {
+
         $UserFavoritePost = UserFavoritePost::where([
-            ['user_id', '=', $user_id],
-            ['favorite_user_id', '=', $favorite_user_id],
-            ['post_id', '=', $post_id]
+            ['user_id', $user_id],
+            ['favorite_user_id', $favorite_user_id],
+            ['post_id', $post_id]
         ])->first();
+
+        logs()->info($UserFavoritePost);
 
         if($UserFavoritePost) {
             // お気に入り登録されていた場合

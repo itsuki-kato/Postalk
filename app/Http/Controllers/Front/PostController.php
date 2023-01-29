@@ -11,12 +11,17 @@ use App\Http\Controllers\Controller;
 use App\Repositories\PostRepository;
 use App\Repositories\UserCategoryRepository;
 use App\Repositories\UserFavoritePostRepository;
+use App\Repositories\UserNotifyRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Services\FileService;
 use App\Services\NotifyService;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use App\Http\Requests\PostRequest;
+use App\Models\UserNotify;
+
+use function PHPUnit\Framework\throwException;
+use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
@@ -28,6 +33,7 @@ class PostController extends Controller
         private PostRepository $postRepository,
         private UserCategoryRepository $userCategoryRepository,
         private UserFavoritePostRepository $userFavoritePostRepository,
+        private UserNotifyRepository $userNotifyRepository,
         private FileService $fileService,
         private NotifyService $notifyService
     )
@@ -151,25 +157,28 @@ class PostController extends Controller
 
         $exists = $this->userFavoritePostRepository->exists(Auth::user()->id, $favorite_user_id, $post_id);
 
-        // お気に入り登録されていなかったら登録処理
-        if($exists == false) {
-            // 複数テーブルに登録のため、外側でTransaction開始
-            DB::beginTransaction();
-            try {
+        // 複数テーブルに登録のため、外側でTransaction開始
+        DB::beginTransaction();
+        try {
+            // お気に入り登録されていなかったら登録処理
+            if($exists == false) {
                 // お気に入り登録
                 $UserFavoritePost = $this->userFavoritePostRepository->favorite(Auth::user()->id, $favorite_user_id, $post_id);
                 // お気に入り登録通知作成
-                $this->notifyService->dispatch($UserFavoritePost);
-
-                DB::commit();
-            } catch(\Exception $e) {
-                throw new Exception('例外が発生しました。'.$e, 1);
-                logs()->info('例外が発生しました。'.$e);
-                DB::rollBack();
+                $this->notifyService->createDispatch($UserFavoritePost);
+            } else {
+                // お気に入り登録されていたら削除処理
+                // TODO：先に親テーブルを削除しようとするとExceptionがスローされるため、先にNotifyのレコードを削除する
+                $this->userNotifyRepository->deleteFavoritePostNotity(Auth::user()->id, $post_id);
+                $this->userFavoritePostRepository->removeFavorite(Auth::user()->id, $favorite_user_id, $post_id);
             }
-        } else {
-            // お気に入り登録されていたら削除処理
-            $this->userFavoritePostRepository->removeFavorite(Auth::user()->id, $favorite_user_id, $post_id);
+
+            DB::commit();
+
+        } catch(\Exception $e) {
+            throwException($e);
+            logs()->info('例外が発生しました。'.$e);
+            DB::rollBack();
         }
 
         // front側でお気に入りボタンの色を変更する処理を追加する。

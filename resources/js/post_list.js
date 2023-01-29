@@ -21,7 +21,7 @@ $(function()
         };
 
         // Ajaxでお気に入り登録or削除
-        exeAjax('POST', '/Postalk/public/post/favorite', 'json', target_data)
+        exeAjax('POST', '/post/favorite', 'json', target_data)
         .then(
             function(data) // 成功した時
             {
