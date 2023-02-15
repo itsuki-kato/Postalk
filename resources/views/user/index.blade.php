@@ -28,10 +28,27 @@
             <tr>
                 <th>フォロー関連</th>
                 <td>
-                    <button type="button" id="follow-apply-btn" data-user-id="{{ Auth::user()->id }}" data-follow-user-id="" class="btn btn-outline-primary">フォロー申請</button>
-                    <button type="button" id="follow-permit-btn" data-user-id="{{ Auth::user()->id }}" data-follow-user-id="" class="btn btn-outline-primary">フォロー許可</button>
-                    <button type="button" id="follow-delete-btn" data-user-id="{{ Auth::user()->id }}" data-follow-user-id="" class="btn btn-outline-primary">フォロー解除</button>
-                    ※まだ反応しない（エラー出るんゴ）
+                    @if(Auth::user()->getFollowStatus(Auth::user()->id, $User->id) === null)
+                        <!-- フォローしていなかったらフォローボタンを表示する -->
+                        <button 
+                            type="button" 
+                            id="follow-apply-btn" 
+                            data-user-id="{{ Auth::user()->id }}" 
+                            data-follow-user-id="{{ $User->id }}" 
+                            class="btn btn-outline-primary">
+                            フォロー申請
+                        </button>
+                    @else
+                        <!-- フォローしていたらフォロー削除ボタンを表示する -->
+                        <button 
+                            type="button" 
+                            id="follow-delete-btn" 
+                            data-user-id="{{ Auth::user()->id }}" 
+                            data-follow-user-id="{{ $User->id }}" 
+                            class="btn btn-outline-primary">
+                            フォロー解除
+                        </button>
+                    @endif
                 </td>
             </tr>
             <tr>

@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use function PHPUnit\Framework\throwException;
 
 class UserFollowController extends Controller
 {
@@ -42,9 +43,6 @@ class UserFollowController extends Controller
         $user_id = $target_data['user_id'];
         $follow_user_id = $target_data['follow_user_id'];
 
-        // デバッグ用
-        $follow_user_id = 21;
-
         // ユーザーが一致しなかったらログアウトさせる
         if(Auth::user()->id != $user_id) {
             return redirect('/logout');
@@ -52,12 +50,16 @@ class UserFollowController extends Controller
 
         // 複数テーブルに登録のため、外側でTransaction開始
         DB::beginTransaction();
-        try {
+        try
+        {
             // フォロー申請
             $UserFollow = $this->userFollowRepository->apply($user_id, $follow_user_id);
             // フォロー申請通知作成
-            $this->notifyService->dispatch($UserFollow);
-        } catch(\Exception $e) {
+            // $this->notifyService->createDispatch($UserFollow);
+            DB::commit();
+        }
+        catch(\Exception $e)
+        {
             throwException($e);
             logs()->info('例外が発生しました'.$e);
             DB::rollBack();
@@ -93,9 +95,6 @@ class UserFollowController extends Controller
             ]);
         }
 
-        // デバッグ用
-        $follow_user_id = 21;
-
         $UserFollow = UserFollow::where([
             ['user_id', $user_id],
             ['follow_user_id', $follow_user_id]
@@ -110,17 +109,20 @@ class UserFollowController extends Controller
 
         // 複数テーブルに登録のため、外側でTransaction開始
         DB::beginTransaction();
-        try {
+        try
+        {
             // フォロー許可
             $this->userFollowRepository->permit($UserFollow);
             // フォロー申請通知作成
-            $this->notifyService->dispatch($UserFollow);
-        } catch(\Exception $e) {
+            // $this->notifyService->createDispatch($UserFollow);
+            DB::commit();
+        }
+        catch(\Exception $e)
+        {
             throwException($e);
             logs()->info('例外が発生しました'.$e);
             DB::rollBack();
         }
-
 
         return response()->json([
             'user_id'        => $user_id,
@@ -142,9 +144,6 @@ class UserFollowController extends Controller
         $target_data = $request->target_data;
         $user_id = $target_data['user_id'];
         $follow_user_id = $target_data['follow_user_id'];
-
-        // デバッグ用
-        $follow_user_id = 21;
 
         // ユーザーが一致しなかったらログアウトさせる
         if(Auth::user()->id != $user_id) {

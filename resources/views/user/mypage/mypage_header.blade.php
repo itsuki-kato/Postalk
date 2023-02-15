@@ -11,15 +11,6 @@
                 <div class="">
                     <span class="">ユーザー名</span>
                 </div>
-                <div class="">
-                    <button type="button" id="follow-apply-btn" data-user-id="{{ Auth::user()->id }}" data-follow-user-id="" class="btn btn-outline-primary">フォロー申請</button>
-                </div>
-                <div class="">
-                    <button type="button" id="follow-permit-btn" data-user-id="{{ Auth::user()->id }}" data-follow-user-id="" class="btn btn-outline-primary">フォロー許可</button>
-                </div>
-                <div class="">
-                    <button type="button" id="follow-delete-btn" data-user-id="{{ Auth::user()->id }}" data-follow-user-id="" class="btn btn-outline-primary">フォロー解除</button>
-                </div>
             </div>
         </div>
         <br>

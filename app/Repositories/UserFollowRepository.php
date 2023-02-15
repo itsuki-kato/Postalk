@@ -72,10 +72,20 @@ class UserFollowRepository
         // 最新のステータスを取得して比較する
         $isSameStatus = $this->compareCurrentStatus($UserFollow->id, $UserFollow->follow_status);
 
-        try {
+        try
+        {
             if($isSameStatus) {
+                // 「フォロー許可」にステータス変更を行う
                 UserFollow::where('id', $UserFollow->id)
                     ->update(['follow_status' => UserFollow::FOLLOW_PERMIT]);
+
+                // 「フォロー許可」は相互フォローとみなし、逆側のレコードも作成する
+                // $UserFollow = UserFollow::create([
+                //     'user_id'        => $UserFollow->follow_user_id,
+                //     'follow_user_id' => $UserFollow->user_id,
+                //     'follow_status'    => UserFollow::FOLLOW_PERMIT
+                // ]);
+
                 DB::commit();
                 logs()->info('フォローを許可しました。'.'user_id:'.$UserFollow->user_id.',follow_user_id:'.$UserFollow->follow_user_id);
             } else {
@@ -83,7 +93,9 @@ class UserFollowRepository
                 logs()->info('ステータスが異なるため許可できませんでした。'.'user_id:'.$UserFollow->user_id.',follow_user_id:'.$UserFollow->follow_user_id);
                 return;
             }
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e)
+        {
             throwException($e);
             logs()->info('例外が発生しました'.$e);
             DB::rollBack();
@@ -111,7 +123,8 @@ class UserFollowRepository
         }
 
         DB::beginTransaction();
-        try {
+        try
+        {
             DB::table('t_user_follow')
                 ->where('user_id', $user_id)
                 ->where('follow_user_id', $follow_user_id)
@@ -119,37 +132,12 @@ class UserFollowRepository
 
             DB::commit();
             logs()->info('フォロー解除が完了しました');
-        } catch (\Exception $e) {
+        }
+        catch(\Exception $e)
+        {
             throwException($e);
             logs()->info('例外が発生しました。'.$e);
-            
             DB::rollBack();
-        }
-    }
-
-    /**
-     * フォローしているかどうかを判断します。
-     *
-     * @param string $user_id
-     * @param string $favorite_user_id
-     * @param string $post_id
-     * @return bool $exists
-     */
-    public function isFollower($user_id, $favorite_user_id, $post_id)
-    {
-        $UserFavoritePost = UserFavoritePost::where([
-            ['user_id', '=', $user_id],
-            ['favorite_user_id', '=', $favorite_user_id],
-            ['id', '=', $post_id]
-        ])->first();
-
-        if($UserFavoritePost) // お気に入り登録されていた場合
-        {
-            return true;
-        }
-        else // お気に入り登録されていなかった場合
-        {
-            return false;
         }
     }
 

@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class UserFollow extends Model
 {
     // define follow_status
-    
-    const FOLLOW_APPLY = 0; // フォロー申請中(相手からのフォロー許可待ち)
+    // NOTE：フォロー許可した段階で相互フォローとなる(予定)。
+    const FOLLOW_APPLY = 0;  // フォロー申請中(相手からのフォロー許可待ち)
     const FOLLOW_PERMIT = 1; // フォロー申請許可
 
     use HasFactory;
@@ -43,41 +43,5 @@ class UserFollow extends Model
     public function followUser()
     {
         return $this->belongsTo('App\Models\User', 'follow_user_id');
-    }
-
-    /**
-     * ログインユーザーが該当のユーザーをフォローしているかどうか判断します。
-     * NOTE:主にフロント側のフォローボタンの制御に使用します。
-     *
-     * @param string $follow_user_id
-     * @return bool
-     */
-    public function isFollowUser($follow_user_id)
-    {
-        $UserFollow = 
-            UserFavoritePost::where([
-                ['follow_user_id', $follow_user_id], 
-                ['user_id', $this->user_id]
-            ]
-        )->first();
-
-        if(is_null($UserFollow)) {
-            // フォローしている場合場合
-            return false;
-        } else {
-            // フォローしてない場合
-            return true;
-        }
-    }
-
-    /**
-     * ログインユーザーが該当のユーザーにフォローされているかどうか判断します。
-     * NOTE:主にフロント側のフォローボタンの制御に使用します。
-     *
-     * @return bool
-     */
-    public function isFollowedUser($user_id)
-    {
-        // TODO:実装
     }
 }
