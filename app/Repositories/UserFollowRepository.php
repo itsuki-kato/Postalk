@@ -18,7 +18,6 @@ class UserFollowRepository
     {
         $user_follow_list = UserFollow::where([
             ['user_id', $user_id],
-            ['follow_status', UserFollow::FOLLOW_PERMIT]
         ])->get();
 
         return $user_follow_list;
@@ -34,7 +33,6 @@ class UserFollowRepository
         // follow_user_idが自身のレコードがフォロワー一覧となる
         $user_follower_list = UserFollow::where([
             ['follow_user_id', $user_id],
-            ['follow_status', UserFollow::FOLLOW_PERMIT]
         ])->get();
 
         return $user_follower_list;

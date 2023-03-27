@@ -8,9 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class UserFollow extends Model
 {
     // define follow_status
-    // NOTE：フォロー許可した段階で相互フォローとなる(予定)。
     const FOLLOW_APPLY = 0;  // フォロー申請中(相手からのフォロー許可待ち)
-    const FOLLOW_PERMIT = 1; // フォロー申請許可
+    const FOLLOW_PERMIT = 1; // フォロー許可
 
     use HasFactory;
 

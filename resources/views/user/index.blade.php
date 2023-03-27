@@ -28,7 +28,9 @@
             <tr>
                 <th>フォロー関連</th>
                 <td>
-                    @if(Auth::user()->getFollowStatus(Auth::user()->id, $User->id) === null)
+                    <div id="follow-btn">
+                        @if(Auth::user()->getFollowStatus(Auth::user()->id, $User->id) === null)
+                        {{-- 初期表示 --}}
                         <!-- フォローしていなかったらフォローボタンを表示する -->
                         <button 
                             type="button" 
@@ -39,6 +41,7 @@
                             フォロー申請
                         </button>
                     @else
+                        {{-- 初期表示 --}}
                         <!-- フォローしていたらフォロー削除ボタンを表示する -->
                         <button 
                             type="button" 
@@ -49,6 +52,8 @@
                             フォロー解除
                         </button>
                     @endif
+                    {{-- ボタン押下後はJSONで動的に描写する --}}
+                </div>
                 </td>
             </tr>
             <tr>
